@@ -54,6 +54,8 @@ Partial Class Form1
         Me.Label1 = New System.Windows.Forms.Label()
         Me.LbGear = New System.Windows.Forms.Label()
         Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.LbCranks = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
         Me.TargetPWR = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.LbDist = New System.Windows.Forms.Label()
@@ -75,8 +77,6 @@ Partial Class Form1
         Me.Label4 = New System.Windows.Forms.Label()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
-        Me.Label13 = New System.Windows.Forms.Label()
-        Me.LbCranks = New System.Windows.Forms.Label()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -418,6 +418,30 @@ Partial Class Form1
         Me.Panel3.Size = New System.Drawing.Size(1142, 648)
         Me.Panel3.TabIndex = 66
         '
+        'LbCranks
+        '
+        Me.LbCranks.AutoSize = True
+        Me.LbCranks.BackColor = System.Drawing.Color.Transparent
+        Me.LbCranks.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LbCranks.ForeColor = System.Drawing.Color.Transparent
+        Me.LbCranks.Location = New System.Drawing.Point(573, 35)
+        Me.LbCranks.Name = "LbCranks"
+        Me.LbCranks.Size = New System.Drawing.Size(24, 28)
+        Me.LbCranks.TabIndex = 82
+        Me.LbCranks.Text = "0"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.BackColor = System.Drawing.Color.Transparent
+        Me.Label13.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label13.ForeColor = System.Drawing.Color.Transparent
+        Me.Label13.Location = New System.Drawing.Point(486, 35)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(96, 28)
+        Me.Label13.TabIndex = 81
+        Me.Label13.Text = "Cadence:"
+        '
         'TargetPWR
         '
         Me.TargetPWR.AutoSize = True
@@ -674,30 +698,6 @@ Partial Class Form1
         Me.Chart1.Size = New System.Drawing.Size(551, 340)
         Me.Chart1.TabIndex = 59
         Me.Chart1.Text = "Chart1"
-        '
-        'Label13
-        '
-        Me.Label13.AutoSize = True
-        Me.Label13.BackColor = System.Drawing.Color.Transparent
-        Me.Label13.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label13.ForeColor = System.Drawing.Color.Transparent
-        Me.Label13.Location = New System.Drawing.Point(486, 35)
-        Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(96, 28)
-        Me.Label13.TabIndex = 81
-        Me.Label13.Text = "Cadence:"
-        '
-        'LbCranks
-        '
-        Me.LbCranks.AutoSize = True
-        Me.LbCranks.BackColor = System.Drawing.Color.Transparent
-        Me.LbCranks.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbCranks.ForeColor = System.Drawing.Color.Transparent
-        Me.LbCranks.Location = New System.Drawing.Point(573, 35)
-        Me.LbCranks.Name = "LbCranks"
-        Me.LbCranks.Size = New System.Drawing.Size(24, 28)
-        Me.LbCranks.TabIndex = 82
-        Me.LbCranks.Text = "0"
         '
         'Form1
         '

@@ -44,7 +44,7 @@ Public Class Form1
         SerialPort1.StopBits = StopBits.One
         SerialPort1.Handshake = Handshake.None
         SerialPort1.Encoding = System.Text.Encoding.UTF8
-
+        'TESTING CODE 
         ' Initialize and configure the timer
         Timer1.Interval = 200  ' Set the interval to 100 milliseconds
         Timer1.Start()
