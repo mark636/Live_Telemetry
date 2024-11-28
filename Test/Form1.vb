@@ -1,18 +1,6 @@
 ﻿Imports System.IO.Ports
-Imports Excel = Microsoft.Office.Interop.Excel
-Imports System.IO
 Imports System.Windows.Forms.DataVisualization.Charting
-Imports System.Linq
-Imports System.Data.SqlClient
-Imports System.Data.OleDb
-Imports Microsoft.Office.Core
-Imports ExcelAutoFormat = Microsoft.Office.Interop.Excel.XlRangeAutoFormat
-Imports Microsoft.Office.Interop
-Imports System.Xml.XPath
-Imports System.Data
-Imports System.Xml
 Imports System.Text
-Imports ClosedXML.Excel
 Public Class Form1
 
     Dim RPM_C As Decimal
@@ -44,7 +32,7 @@ Public Class Form1
         SerialPort1.StopBits = StopBits.One
         SerialPort1.Handshake = Handshake.None
         SerialPort1.Encoding = System.Text.Encoding.UTF8
-        'TESTING CODE 
+
         ' Initialize and configure the timer
         Timer1.Interval = 200  ' Set the interval to 100 milliseconds
         Timer1.Start()
