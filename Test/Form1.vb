@@ -346,26 +346,48 @@ Public Class Form1
     Private Sub ButtonScanPort_Click(sender As Object, e As EventArgs) Handles ButtonScanPort.Click
         ComboBoxPort.Items.Clear()
         Dim myPort As Array
-        Dim i As Integer
         myPort = IO.Ports.SerialPort.GetPortNames()
-        ComboBoxPort.Items.AddRange(myPort)
-        i = ComboBoxPort.Items.Count
-        i = i - i
-        Try
-            ComboBoxPort.SelectedIndex = i
+
+        ' Populate the ComboBox with available ports
+        If myPort.Length > 0 Then
+            ComboBoxPort.Items.AddRange(myPort)
+            ComboBoxPort.SelectedIndex = 0
             ButtonConnect.Enabled = True
-        Catch ex As Exception
-            MsgBox("Com port not detected", MsgBoxStyle.Critical, "Warning !!!")
+        Else
+            MsgBox("No COM ports detected", MsgBoxStyle.Information, "Warning !!!")
             ComboBoxPort.Text = ""
-            ComboBoxPort.Items.Clear()
-            Return
-        End Try
+            ButtonConnect.Enabled = False
+        End If
+
+        ' Expand the ComboBox to show available ports
         ComboBoxPort.DroppedDown = True
     End Sub
-    'Crashing when nothing is in menu strip and connect button is pressed twice
+
     Private Sub ButtonConnect_Click(sender As Object, e As EventArgs) Handles ButtonConnect.Click
-        SerialPort1.PortName = ComboBoxPort.SelectedItem
-        SerialPort1.Open()
-        Timer1.Start()
+        Try
+            ' Check if a port is selected
+            If ComboBoxPort.SelectedItem Is Nothing Then
+                MsgBox("Please select a COM port before connecting.", MsgBoxStyle.Exclamation, "Error")
+                Return
+            End If
+
+            ' Prevent connecting if the port is already open
+            If SerialPort1.IsOpen Then
+                MsgBox("The port is already open.", MsgBoxStyle.Information, "Warning")
+                Return
+            End If
+
+            ' Set the port name and open the connection
+            SerialPort1.PortName = ComboBoxPort.SelectedItem.ToString()
+            SerialPort1.Open()
+            Timer1.Start()
+
+            MsgBox("Connected successfully!", MsgBoxStyle.Information, "Success")
+        Catch ex As UnauthorizedAccessException
+            MsgBox("Access to the COM port is denied. Make sure it's not in use by another application.", MsgBoxStyle.Critical, "Error")
+        Catch ex As Exception
+            MsgBox($"An error occurred: {ex.Message}", MsgBoxStyle.Critical, "Error")
+        End Try
     End Sub
+
 End Class
