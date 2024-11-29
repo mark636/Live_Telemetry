@@ -215,7 +215,7 @@ Public Class Form1
                         GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
                         GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
                         GroupBox3.BackColor = Color.FromArgb(128, 255, 128)
-                        updateLabel(Label7, "STATUS: OK!!!!!")
+                        updateLabel(Label7, "STATUS: OK!")
                         updateLabel(Label6, "STATUS: OK!")
                         updateLabel(Label4, "STATUS: OK!")
                     Else

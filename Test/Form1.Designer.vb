@@ -339,9 +339,9 @@ Partial Class Form1
         Me.LbBatG.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold)
         Me.LbBatG.Location = New System.Drawing.Point(1040, 38)
         Me.LbBatG.Name = "LbBatG"
-        Me.LbBatG.Size = New System.Drawing.Size(80, 28)
+        Me.LbBatG.Size = New System.Drawing.Size(24, 28)
         Me.LbBatG.TabIndex = 69
-        Me.LbBatG.Text = "LbBatG"
+        Me.LbBatG.Text = "0"
         '
         'Lbmax
         '
