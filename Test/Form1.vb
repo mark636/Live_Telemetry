@@ -390,4 +390,38 @@ Public Class Form1
         End Try
     End Sub
 
+    Private Sub btnSettings_Click(sender As Object, e As EventArgs) Handles btnSettings.Click
+        ' Open the Settings Form
+        Dim settingsForm As New Form2
+        settingsForm.DistanceToFinish = 8046.72 ' Example default value
+        settingsForm.TargetPowerRanges = New List(Of (Decimal, Decimal, Integer)) From {
+            (0, 1500, 90),
+            (1500, 2000, 110),
+            (2000, 2500, 150),
+            (2500, 3000, 200),
+            (3000, 3500, 250),
+            (3500, Decimal.MaxValue, 300)
+        }
+
+        ' Check result
+        If settingsForm.ShowDialog() = DialogResult.OK Then
+            ' Update settings
+            Dim newDTF = settingsForm.DistanceToFinish
+            Dim newRanges = settingsForm.TargetPowerRanges
+
+            ' Apply updated ranges
+            Dim DTF As Decimal = newDTF - Distance
+            LbDist.Text = DTF.ToString()
+
+            Dim targetPower As Integer = 0
+            For Each range In newRanges
+                If Distance >= range.Item1 AndAlso Distance < range.Item2 Then
+                    targetPower = range.Item3
+                    Exit For
+                End If
+            Next
+
+            TargetPWR.Text = targetPower.ToString()
+        End If
+    End Sub
 End Class
