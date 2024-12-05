@@ -16,6 +16,24 @@
         Next
     End Sub
 
+    Private Sub dgvPowerRanges_CellValidating(sender As Object, e As DataGridViewCellValidatingEventArgs) Handles dgvPowerRanges.CellValidating
+        ' Validate numeric inputs
+        If e.ColumnIndex = dgvPowerRanges.Columns("RangeStart").Index OrElse
+           e.ColumnIndex = dgvPowerRanges.Columns("RangeEnd").Index Then
+            Dim value As Decimal
+            If Not Decimal.TryParse(e.FormattedValue?.ToString(), value) Then
+                MessageBox.Show("Please enter a valid decimal number.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                e.Cancel = True
+            End If
+        ElseIf e.ColumnIndex = dgvPowerRanges.Columns("TargetPower").Index Then
+            Dim value As Integer
+            If Not Integer.TryParse(e.FormattedValue?.ToString(), value) Then
+                MessageBox.Show("Please enter a valid integer.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                e.Cancel = True
+            End If
+        End If
+    End Sub
+
     Private Sub SetupDataGridView()
         ' Clear existing setup
         dgvPowerRanges.Columns.Clear()
