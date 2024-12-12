@@ -124,7 +124,7 @@ Public Class Form1
                     Dim diff1to2 As Decimal = 0.0
                     Dim diff2to3 As Decimal = 0.0
                     Dim diff1to3 As Decimal = 0.0
-                    Dim value0, value1, value2, gear, distance, rpmCR, rpmS, rpmC, power As Decimal
+                    Dim value0, value1, value2, gear, distance, power As Decimal
                     If Decimal.TryParse(somestring(0).Trim(), value0) AndAlso
                         Decimal.TryParse(somestring(1).Trim(), value1) AndAlso
                         Decimal.TryParse(somestring(2).Trim(), value2) Then
@@ -232,36 +232,80 @@ Public Class Form1
                         lbENVSen.ForeColor = Color.FromArgb(128, 255, 128)
                     End If
 
-                    ' Determine if all wheels are within the tolerance
-                    If diff1to2 <= WTolerance AndAlso diff2to3 <= WTolerance AndAlso diff1to3 <= WTolerance Then
-                        ' All wheels are within tolerance - set all GroupBoxes to default color
+                    '' Determine if all wheels are within the tolerance
+                    'If diff1to2 <= WTolerance AndAlso diff2to3 <= WTolerance AndAlso diff1to3 <= WTolerance Then
+                    '    ' All wheels are within tolerance - set all GroupBoxes to default color
+                    '    GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
+                    '    GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
+                    '    GroupBox3.BackColor = Color.FromArgb(128, 255, 128)
+                    '    updateLabel(Label7, "STATUS: OK!")
+                    '    updateLabel(Label6, "STATUS: OK!")
+                    '    updateLabel(Label4, "STATUS: OK!")
+                    'Else
+                    '    ' At least one pair of wheels is outside the tolerance - highlight the differing GroupBoxes
+                    '    If diff1to2 > WTolerance And diff1to3 > WTolerance Then
+                    '        GroupBox1.BackColor = Color.Red
+                    '        Label4.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff1to3: " & diff1to3.ToString("F2")
+                    '    Else
+                    '        GroupBox1.ForeColor = Color.Black
+                    '    End If
+
+                    '    If diff1to2 > WTolerance And diff2to3 > WTolerance Then
+                    '        GroupBox2.BackColor = Color.Red
+                    '        Label6.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
+                    '    Else
+                    '        GroupBox2.ForeColor = Color.Black
+                    '    End If
+
+                    '    If diff1to3 > WTolerance And diff2to3 > WTolerance Then
+                    '        GroupBox3.BackColor = Color.Red
+                    '        Label7.Text = "diff1to3: " & diff1to3.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
+                    '    Else
+                    '        GroupBox3.ForeColor = Color.Black
+                    '    End If
+                    'End If
+
+                    If RPM_C <= 0 OrElse RPM_L <= 0 OrElse RPM_R <= 0 Then
+                        ' Handle invalid RPM scenario
                         GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
                         GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
                         GroupBox3.BackColor = Color.FromArgb(128, 255, 128)
-                        updateLabel(Label7, "STATUS: OK!")
-                        updateLabel(Label6, "STATUS: OK!")
-                        updateLabel(Label4, "STATUS: OK!")
+
+                        Label4.Text = "ERROR: Invalid RPM"
+                        Label6.Text = "ERROR: Invalid RPM"
+                        Label7.Text = "ERROR: Invalid RPM"
+
+                        ' Optional: Add logging or additional error handling
+                        Exit Sub ' Or return from the method
+                    End If
+
+                    If Math.Abs(diff1to2 / Math.Max(RPM_C, RPM_L) * 100) <= 2 AndAlso
+                       Math.Abs(diff2to3 / Math.Max(RPM_L, RPM_R) * 100) <= 2 AndAlso
+                       Math.Abs(diff1to3 / Math.Max(RPM_R, RPM_C) * 100) <= 2 Then
+
+                        ' All wheels are within 2% tolerance
+                        GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
+                        GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
+                        GroupBox3.BackColor = Color.FromArgb(128, 255, 128)
+
+                        Label4.Text = "STATUS: OK!"
+                        Label6.Text = "STATUS: OK!"
+                        Label7.Text = "STATUS: OK!"
                     Else
-                        ' At least one pair of wheels is outside the tolerance - highlight the differing GroupBoxes
-                        If diff1to2 > WTolerance And diff1to3 > WTolerance Then
+                        ' Check which comparisons are outside 2% tolerance
+                        If Math.Abs(diff1to2 / Math.Max(RPM_C, RPM_L) * 100) > 2 Then
                             GroupBox1.BackColor = Color.Red
-                            Label4.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff1to3: " & diff1to3.ToString("F2")
-                        Else
-                            GroupBox1.ForeColor = Color.Black
+                            Label4.Text = $"RPM Diff: {Math.Abs(diff1to2 / Math.Max(RPM_C, RPM_L) * 100):F2}%"
                         End If
 
-                        If diff1to2 > WTolerance And diff2to3 > WTolerance Then
+                        If Math.Abs(diff2to3 / Math.Max(RPM_L, RPM_R) * 100) > 2 Then
                             GroupBox2.BackColor = Color.Red
-                            Label6.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
-                        Else
-                            GroupBox2.ForeColor = Color.Black
+                            Label6.Text = $"RPM Diff: {Math.Abs(diff2to3 / Math.Max(RPM_L, RPM_R) * 100):F2}%"
                         End If
 
-                        If diff1to3 > WTolerance And diff2to3 > WTolerance Then
+                        If Math.Abs(diff1to3 / Math.Max(RPM_R, RPM_C) * 100) > 2 Then
                             GroupBox3.BackColor = Color.Red
-                            Label7.Text = "diff1to3: " & diff1to3.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
-                        Else
-                            GroupBox3.ForeColor = Color.Black
+                            Label7.Text = $"RPM Diff: {Math.Abs(diff1to3 / Math.Max(RPM_R, RPM_C) * 100):F2}%"
                         End If
                     End If
 
@@ -333,16 +377,6 @@ Public Class Form1
     Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
         SerialPort1.Close()
         Timer1.Stop()
-    End Sub
-    Private Sub ReleaseObject(ByVal obj As Object)
-        Try
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(obj)
-            obj = Nothing
-        Catch ex As Exception
-            obj = Nothing
-        Finally
-            GC.Collect()
-        End Try
     End Sub
     Private Sub comparsion(actualratio As Decimal)
         If actualratio >= 0.35556 Then
