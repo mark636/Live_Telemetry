@@ -329,11 +329,10 @@ Public Class Form1
 
                     'Cadence
                     LbCranks.Text = cranksValue
-<<<<<<< HEAD
 
                     'Distance to Finish
                     Dim DTF As Decimal
-                    DTF = settingsForm.DistanceToFinish - distance
+                    DTF = 8046.72 - distance
                     LbDist.Text = DTF
 
                     ' Target Power Calculation
@@ -352,8 +351,6 @@ Public Class Form1
                         targetPower = 300
                     End If
                     TargetPWR.Text = targetPower.ToString()
-=======
->>>>>>> 1c356ed5b34817ccd673c7c1c23ca938920ecbef
                 End If
             End If
         Next
@@ -475,47 +472,4 @@ Public Class Form1
         End Try
     End Sub
 
-<<<<<<< HEAD
-    Private Sub btnSettings_Click(sender As Object, e As EventArgs) Handles btnSettings.Click
-        ' Open the Settings Form
-
-        ' Pass the current DistanceToFinish and TargetPowerRanges to the settings form
-        settingsForm.DistanceToFinish = DTF ' Assuming DistanceToFinish is a property in the main form
-        settingsForm.TargetPowerRanges = New List(Of (Decimal, Decimal, Integer)) From {
-            (0, 1500, 90),
-            (1500, 2000, 110),
-            (2000, 2500, 150),
-            (2500, 3000, 200),
-            (3000, 3500, 250),
-            (3500, Decimal.MaxValue, 300)
-        }
-
-        ' Show the settings form and check if the user clicked OK
-        If settingsForm.ShowDialog() = DialogResult.OK Then
-            ' Update the main form's DistanceToFinish with the new value from settingsForm
-
-            ' Calculate the new distance to the finish and update UI
-            Dim DT_F As Decimal = DTF - Distance
-            LbDist.Text = DT_F.ToString()
-
-=======
-    ' Modify the btnSettings_Click method
-    Private Sub btnSettings_Click(sender As Object, e As EventArgs) Handles btnSettings.Click
-        ' Open the Settings Form
-        Dim settingsForm As New Form2()
-
-        ' Pass the current values to the settings form
-        settingsForm.DistanceToFinish = _distanceToFinish
-        settingsForm.TargetPowerRanges = New List(Of (Decimal, Decimal, Integer))(_targetPowerRanges)
-
-        ' Check result
-        If settingsForm.ShowDialog() = DialogResult.OK Then
-            _distanceToFinish = settingsForm.DistanceToFinish
-            _targetPowerRanges = settingsForm.TargetPowerRanges
-
-            ' Update calculations based on the new distance
-            UpdateTargetPowerAndDistance()
->>>>>>> 1c356ed5b34817ccd673c7c1c23ca938920ecbef
-        End If
-    End Sub
 End Class
