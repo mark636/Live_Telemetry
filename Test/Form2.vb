@@ -62,32 +62,6 @@
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
-=======
->>>>>>> 1c356ed5b34817ccd673c7c1c23ca938920ecbef
-
-        ' Add Range Start column
-        Dim colRangeStart As New DataGridViewTextBoxColumn()
-        colRangeStart.Name = "RangeStart"
-        colRangeStart.HeaderText = "Range Start"
-        colRangeStart.ValueType = GetType(Decimal)
-        dgvPowerRanges.Columns.Add(colRangeStart)
-
-        ' Add Range End column
-        Dim colRangeEnd As New DataGridViewTextBoxColumn()
-        colRangeEnd.Name = "RangeEnd"
-        colRangeEnd.HeaderText = "Range End"
-        colRangeEnd.ValueType = GetType(Decimal)
-        dgvPowerRanges.Columns.Add(colRangeEnd)
-
-        ' Add Target Power column
-        Dim colTargetPower As New DataGridViewTextBoxColumn()
-        colTargetPower.Name = "TargetPower"
-        colTargetPower.HeaderText = "Target Power (W)"
-        colTargetPower.ValueType = GetType(Integer)
-        dgvPowerRanges.Columns.Add(colTargetPower)
-    End Sub
-
-    Private Sub btnSave_Click(sender As Object, e As EventArgs) Handles btnSave.Click
         Try
             ' Validate and save Distance to Finish
             If Not Decimal.TryParse(txtDistanceToFinish.Text, DistanceToFinish) Then
