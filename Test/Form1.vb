@@ -112,9 +112,9 @@ Public Class Form1
                 ' Ensure that the array has at least 2 elements
                 If somestring.Length >= 27 Then
                     ' Calculate the differences
-                    Dim diff1to2 As Decimal = Math.Abs(somestring(0) - somestring(1))
-                    Dim diff2to3 As Decimal = Math.Abs(somestring(1) - somestring(2))
-                    Dim diff1to3 As Decimal = Math.Abs(somestring(0) - somestring(2))
+                    Dim diff1to2 As Decimal = Math.Abs(somestring(0).Trim() - somestring(1).Trim())
+                    Dim diff2to3 As Decimal = Math.Abs(somestring(1).Trim() - somestring(2).Trim())
+                    Dim diff1to3 As Decimal = Math.Abs(somestring(0).Trim() - somestring(2).Trim())
                     Dim gear As Decimal = somestring(7).Trim()
                     Dim cranksValue As String = somestring(2).Trim()
                     RPM_CR = Decimal.Parse(somestring(4))

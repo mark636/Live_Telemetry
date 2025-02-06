@@ -37,7 +37,6 @@
     Private Sub SetupDataGridView()
         ' Clear existing setup
         dgvPowerRanges.Columns.Clear()
-<<<<<<< HEAD
 
         ' Add Range Start column
         Dim colRangeStart As New DataGridViewTextBoxColumn()
