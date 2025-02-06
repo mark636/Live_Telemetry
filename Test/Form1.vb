@@ -2,7 +2,6 @@
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Text
 Public Class Form1
-
     Dim RPM_C As Decimal
     Dim RPM_L As Decimal
     Dim RPM_R As Decimal
@@ -259,7 +258,7 @@ Public Class Form1
 
                     'Distance to Finish
                     Dim DTF As Decimal
-                    DTF = settingsForm.DistanceToFinish - Distance
+                    DTF = Form2.DistanceToFinish - Distance
                     LbDist.Text = DTF
 
                     ' Target Power Calculation
@@ -395,18 +394,9 @@ Public Class Form1
     End Sub
 
     Private Sub btnSettings_Click(sender As Object, e As EventArgs) Handles btnSettings.Click
-        ' Open the Settings Form
 
         ' Pass the current DistanceToFinish and TargetPowerRanges to the settings form
-        settingsForm.DistanceToFinish = DTF ' Assuming DistanceToFinish is a property in the main form
-        settingsForm.TargetPowerRanges = New List(Of (Decimal, Decimal, Integer)) From {
-            (0, 1500, 90),
-            (1500, 2000, 110),
-            (2000, 2500, 150),
-            (2500, 3000, 200),
-            (3000, 3500, 250),
-            (3500, Decimal.MaxValue, 300)
-        }
+        Form2.DistanceToFinish = DTF ' Assuming DistanceToFinish is a property in the main form
 
         ' Show the settings form and check if the user clicked OK
         If settingsForm.ShowDialog() = DialogResult.OK Then
