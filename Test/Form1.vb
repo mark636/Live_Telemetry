@@ -1,411 +1,221 @@
-﻿Imports System.IO.Ports
+﻿' Refactored VB.NET Telemetry Dashboard
+Imports System.IO.Ports
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Text
+Imports System.Collections.Concurrent
+
 Public Class Form1
-    Dim RPM_C As Decimal
-    Dim RPM_L As Decimal
-    Dim RPM_R As Decimal
-    Dim RPM_CR As Decimal
-    Dim RPM_S As Decimal
-    Dim Total_Speed As Decimal
-    Dim POWER As Decimal
-    Dim Steering_A As Decimal
-    Dim TEMP As Decimal
-    Dim HUMD As Decimal
-    Dim PRESS As Decimal
-    Dim Distance As Decimal
+    ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
     Dim WithEvents Timer1 As New Timer
-    Dim Limit = 20
-    Dim actualGearRatio As Decimal
-    Dim actualChainRatio As Decimal
-    Dim maxspeed = -2
+    Dim dataQueue As New ConcurrentQueue(Of String)
+    Dim partialLine As String = ""
+
+    ' --- Metrics ---
+    Dim RPM_C, RPM_L, RPM_R, RPM_CR, RPM_S, Total_Speed, POWER, Steering_A, TEMP, HUMD, PRESS, Distance, actualGearRatio, actualChainRatio As Decimal
+    Dim maxspeed As Decimal = -2
     Dim actualgear As Integer
-    Dim settingsForm As New Form2
+    Dim Limit As Integer = 20
     Dim DTF As Decimal
-    Dim serialBuffer As New StringBuilder()
-    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'Initialize And configure the serial port
+    Dim settingsForm As New Form2
+
+    ' --- Initialization ---
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         SerialPort1.Close()
         SerialPort1.BaudRate = 115200
         SerialPort1.DataBits = 8
         SerialPort1.Parity = Parity.None
         SerialPort1.StopBits = StopBits.One
         SerialPort1.Handshake = Handshake.None
-        SerialPort1.Encoding = System.Text.Encoding.UTF8
+        SerialPort1.Encoding = Encoding.UTF8
 
-        ' Initialize and configure the timer
-        Timer1.Interval = 200  ' Set the interval to 100 milliseconds
+        Timer1.Interval = 50
         Timer1.Start()
 
-        ' Configure Chart1 for Humidity and Temperature
-        Chart1.Series.Clear()
-
-        ' Initialize Charts and Series
         InitializeChart(Chart1, "SPEED", {"TOTAL SPEED"})
-        InitializeChart(Chart2, "POWER", {"POWER", "TARGET POWER"}) ' Added "TARGET POWER" series
+        InitializeChart(Chart2, "POWER", {"POWER", "TARGET POWER"})
 
-        ' Set Y-axis maximum values
-        Chart1.ChartAreas(0).AxisY.Maximum = 120 'SET MAXIMUM VALUE
-        Chart2.ChartAreas(0).AxisY.Maximum = 450 ' Set MAXIMUM VALUE
+        Chart1.ChartAreas(0).AxisY.Maximum = 120
+        Chart2.ChartAreas(0).AxisY.Maximum = 450
     End Sub
+
     Private Sub InitializeChart(chart As Chart, title As String, seriesNames() As String)
         chart.Series.Clear()
         chart.Titles.Clear()
         chart.ChartAreas.Clear()
-
         chart.Titles.Add(title)
         chart.ChartAreas.Add(New ChartArea())
-
         For Each seriesName In seriesNames
             Dim series As New Series(seriesName) With {.ChartType = SeriesChartType.Line}
             chart.Series.Add(series)
         Next
     End Sub
-    Private Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Tick
-        ProcessSerialData()
-    End Sub
-    Private Sub SerialPort1_DataReceived(ByVal sender As Object, ByVal e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
+
+    ' --- Serial Handling ---
+    Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         Try
-            Dim mydata As String = SerialPort1.ReadExisting()
-            If TextBox1.InvokeRequired Then
-                TextBox1.Invoke(DirectCast(Sub() AppendToBuffer(mydata), MethodInvoker))
+            Dim data As String = SerialPort1.ReadExisting()
+            Dim lines = (partialLine & data).Split(ControlChars.Lf)
+            For i = 0 To lines.Length - 2
+                dataQueue.Enqueue(lines(i).Trim())
+            Next
+            partialLine = lines.Last()
+        Catch ex As Exception
+            Console.WriteLine("Serial error: " & ex.Message)
+        End Try
+    End Sub
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        Dim line As String = Nothing
+        If dataQueue.TryDequeue(line) Then
+            ProcessLine(line)
+        End If
+    End Sub
+
+    ' --- Data Processing ---
+    Private Sub ProcessLine(line As String)
+        If String.IsNullOrEmpty(line) OrElse Not line.Contains(",") Then Return
+        Dim s() As String = line.Split(",")
+        If s.Length < 27 Then Return
+
+        If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
+        Decimal.TryParse(s(4), RPM_CR)
+        Decimal.TryParse(s(5), Total_Speed)
+        Decimal.TryParse(s(18), Distance)
+        Decimal.TryParse(s(26), POWER)
+
+        LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
+        UpdateGearChainRatio(RPM_CR, RPM_S, RPM_C)
+        UpdateCharts(Total_Speed, POWER)
+
+        ' --- Gear Check ---
+        Dim expectedGearRatios As New Dictionary(Of String, Decimal) From {
+            {"1.0", 0.35556}, {"2", 0.31111}, {"3.0", 0.27778},
+            {"4.0", 0.24444}, {"5.0", 0.22222}, {"6.0", 0.18889}
+        }
+
+        Dim gearKey As String = s(7).Trim()
+        If expectedGearRatios.ContainsKey(gearKey) Then
+            Dim expected = expectedGearRatios(gearKey)
+            Dim tolerance = expected * 0.02
+            If actualGearRatio < expected - tolerance OrElse actualGearRatio > expected + tolerance Then
+                comparsion(actualGearRatio)
+                Label8.Invoke(Sub()
+                                  Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualgear}"
+                                  GroupBox4.BackColor = Color.Red
+                              End Sub)
             Else
-                AppendToBuffer(mydata)
+                Label8.Invoke(Sub()
+                                  Label8.Text = "STATUS: OK!"
+                                  GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
+                              End Sub)
             End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub AppendToBuffer(data As String)
-        serialBuffer.Append(data)
-    End Sub
-    Private Sub ProcessSerialData()
-        Dim s As String = serialBuffer.ToString()
-        Dim Tolerance As Decimal = 0.02
-        Dim WTolerance As Decimal = 11
-        Dim expectedGearRatios As New Dictionary(Of String, Double) From {
-    {"1.0", 0.35556}, '0.35556
-    {"2", 0.31111}, '0.31111
-    {"3.0", 0.27778},'0.27778
-    {"4.0", 0.24444},'0.24444
-    {"5.0", 0.22222},'0.22222
-    {"6.0", 0.18889} '0.18889  
-}
-        actualGearRatio = 0.0
-        actualChainRatio = 0.0
-
-        ' Check if the string is null or empty
-        If String.IsNullOrEmpty(s) Then
-            Return
         End If
 
-        ' Split string based on newline
-        Dim lines() As String = s.Split(New Char() {ControlChars.Lf})
+        ' --- Wheel RPM Comparison ---
+        Dim diff1to2 As Decimal = Math.Abs(RPM_C - RPM_L)
+        Dim diff2to3 As Decimal = Math.Abs(RPM_L - RPM_R)
+        Dim diff1to3 As Decimal = Math.Abs(RPM_C - RPM_R)
+        Dim toleranceW = 11D
 
-        ' Process each complete line
-        For Each line As String In lines
-            If Not String.IsNullOrEmpty(line) AndAlso line.Contains(",") Then
-                ' Split string based on comma
-                Dim somestring() As String = line.Split(New Char() {","c})
-                ' Ensure that the array has at least 2 elements
-                If somestring.Length >= 27 Then
-                    ' Calculate the differences
-                    Dim diff1to2 As Decimal = Math.Abs(somestring(0).Trim() - somestring(1).Trim())
-                    Dim diff2to3 As Decimal = Math.Abs(somestring(1).Trim() - somestring(2).Trim())
-                    Dim diff1to3 As Decimal = Math.Abs(somestring(0).Trim() - somestring(2).Trim())
-                    Dim gear As Decimal = somestring(7).Trim()
-                    Dim cranksValue As String = somestring(2).Trim()
-                    RPM_CR = Decimal.Parse(somestring(4))
-                    RPM_S = Decimal.Parse(somestring(4))
-                    RPM_C = Decimal.Parse(somestring(0))
-                    Distance = Decimal.Parse(somestring(18).Trim())
-
-                    Dim powerValue As String = somestring(26).Trim()
-                    If Not String.IsNullOrEmpty(powerValue) AndAlso Decimal.TryParse(powerValue, POWER) Then
-                        ' Update label with power value
-                        LbPower.Text = POWER.ToString()
-                    End If
-
-                    'Update gear ratio
-                    UpdateGearChainRatio(RPM_CR, RPM_S, RPM_C)
-
-                    ' Update Charts Efficiently
-                    UpdateCharts(Total_Speed, POWER)
-
-                    Dim gearString As String = somestring(7).Trim()
-                    ' Attempt to parse the gear value as an Integer
-                    If Decimal.TryParse(gearString, gear) Then
-                        ' Check if the gear exists in the dictionary
-                        If expectedGearRatios.ContainsKey(gear) Then
-                            Dim calculatedRatio As Decimal = expectedGearRatios(gear)
-                            Dim upperLimit As Decimal = calculatedRatio + (calculatedRatio * Tolerance)
-                            Dim lowerLimit As Decimal = calculatedRatio - (calculatedRatio * Tolerance)
-
-                            ' Perform the gear ratio check
-                            If actualGearRatio > upperLimit Or actualGearRatio < lowerLimit Then
-                                comparsion(actualGearRatio)
-                                If Label8.Text <> "GEAR RATIO: " & actualGearRatio.ToString("F2") & " Gear: " & actualgear Then
-                                    Label8.Text = "GEAR RATIO: " & actualGearRatio.ToString("F2") & " Gear: " & actualgear
-                                End If
-                                If GroupBox4.BackColor <> Color.Red Then
-                                    GroupBox4.BackColor = Color.Red
-                                End If
-                            Else
-                                If Label8.Text <> "STATUS: OK!" Then
-                                    Label8.Text = "STATUS: OK!"
-                                End If
-                                If GroupBox4.BackColor <> Color.FromArgb(128, 255, 128) Then
-                                    GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
-                                End If
-                            End If
-                        Else
-                            Debug.WriteLine("Gear not found in the dictionary.")
-                        End If
-                    Else
-                        Debug.WriteLine("Invalid gear data: " & gearString)
-                    End If
-
-                    ' Check if the chain might be off
-                    Dim upperChainLimit As Decimal = 0.38095 + (0.38095 * Tolerance)
-                    Dim lowerChainLimit As Decimal = 0.38095 - (0.38095 * Tolerance)
-
-                    If actualChainRatio > upperChainLimit Or actualChainRatio < lowerChainLimit Then
-                        ' Chain might be off - set GroupBox to red
-                        If GroupBox5.BackColor <> Color.Red Then
-                            GroupBox5.BackColor = Color.Red
-                        End If
-                        If LbChain.Text <> "CHAIN RATIO: " & actualGearRatio.ToString("F2") Then
-                            LbChain.Text = "CHAIN RATIO: " & actualGearRatio.ToString("F2")
-                        End If
-                    Else
-                        ' Chain seems fine - set GroupBox to default color
-                        If GroupBox5.BackColor <> Color.FromArgb(128, 255, 128) Then
-                            GroupBox5.BackColor = Color.FromArgb(128, 255, 128)
-                        End If
-                    End If
-
-                    Try
-                        Total_Speed = Decimal.Parse(somestring(5))
-                        If (Total_Speed > maxspeed) Then
-                            maxspeed = Total_Speed
-                        End If
-                        Lbmax.Text = maxspeed.ToString() & " KPH"
-                        LbSpeed2.Text = Total_Speed & " KPH"
-                    Catch ex As Exception
-                        Continue For
-                    End Try
-
-                    'SENSOR STATUS
-                    UpdateLabelBasedOnValue(somestring(0).Trim(), LbSenRPMC, "RPM_CENTRE: DISCONNECTED")
-                    UpdateLabelBasedOnValue(somestring(1).Trim(), LbSenRPML, "RPM_LEFT: DISCONNECTED")
-                    UpdateLabelBasedOnValue(somestring(2).Trim(), LbSenRPMR, "RPM_RIGHT: DISCONNECTED")
-                    UpdateLabelBasedOnValue(somestring(3).Trim(), LbSenCrank, "RPM_RIGHT: DISCONNECTED")
-                    UpdateLabelBasedOnValue(somestring(4).Trim(), lbSenShaft, "RPM_RIGHT: DISCONNECTED")
-
-                    If somestring(15).Trim() = "0.0" And somestring(16).Trim() = "0.0" And somestring(16).Trim() = "0.0" Then
-                        lbENVSen.Text = "ENVIRONMENTAL: DISCONNECTED"
-                        lbENVSen.ForeColor = Color.Red
-                    Else
-                        lbENVSen.ForeColor = Color.FromArgb(128, 255, 128)
-                    End If
-
-                    ' Determine if all wheels are within the tolerance
-                    If diff1to2 <= WTolerance AndAlso diff2to3 <= WTolerance AndAlso diff1to3 <= WTolerance Then
-                        ' All wheels are within tolerance - set all GroupBoxes to default color
-                        GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
-                        GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
-                        GroupBox3.BackColor = Color.FromArgb(128, 255, 128)
-                        updateLabel(Label7, "STATUS: OK!")
-                        updateLabel(Label6, "STATUS: OK!")
-                        updateLabel(Label4, "STATUS: OK!")
-                    Else
-                        ' At least one pair of wheels is outside the tolerance - highlight the differing GroupBoxes
-                        If diff1to2 > WTolerance And diff1to3 > WTolerance Then
-                            GroupBox1.BackColor = Color.Red
-                            Label4.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff1to3: " & diff1to3.ToString("F2")
-                        Else
-                            GroupBox1.ForeColor = Color.Black
-                        End If
-
-                        If diff1to2 > WTolerance And diff2to3 > WTolerance Then
-                            GroupBox2.BackColor = Color.Red
-                            Label6.Text = "diff1to2: " & diff1to2.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
-                        Else
-                            GroupBox2.ForeColor = Color.Black
-                        End If
-
-                        If diff1to3 > WTolerance And diff2to3 > WTolerance Then
-                            GroupBox3.BackColor = Color.Red
-                            GroupBox1.BackColor = Color.FromArgb(128, 255, 128)
-                            GroupBox2.BackColor = Color.FromArgb(128, 255, 128)
-                            Label7.Text = "diff1to3: " & diff1to3.ToString("F2") & ", diff2to3: " & diff2to3.ToString("F2")
-                        Else
-                            GroupBox3.ForeColor = Color.Black
-                        End If
-                    End If
-
-                    'GEAR Label
-                    LbGear2.Text = somestring(7)
-
-                    'Battery_Gear
-                    LbBatG.Text = somestring(8)
-                    LbBatteryPi.Text = somestring(18)
-                    LbAnalog.Text = somestring(19)
-
-                    'Cadence
-                    LbCranks.Text = cranksValue
-
-                    'Distance to Finish
-                    Dim DTF As Decimal
-                    DTF = Form2.DistanceToFinish - Distance
-                    LbDist.Text = DTF
-
-                    ' Target Power Calculation
-                    Dim targetPower As Integer
-                    If Distance >= 0 And Distance <= 1500 Then
-                        targetPower = 90
-                    ElseIf Distance >= 1500 And Distance < 2000 Then
-                        targetPower = 110
-                    ElseIf Distance >= 2000 And Distance < 2500 Then
-                        targetPower = 150
-                    ElseIf Distance >= 2500 And Distance < 3000 Then
-                        targetPower = 200
-                    ElseIf Distance >= 3000 And Distance < 3500 Then
-                        targetPower = 250
-                    ElseIf Distance >= 3500 Then
-                        targetPower = 300
-                    End If
-                    TargetPWR.Text = targetPower.ToString()
-                End If
-            End If
-        Next
-        ' Remove processed data from the buffer
-        If lines.Length > 1 Then
-            serialBuffer.Clear()
-            serialBuffer.Append(lines.Last())
-        End If
-    End Sub
-    Private Sub updateLabel(ByVal label As Label, contentLabel As String)
-        label.Text = contentLabel
-    End Sub
-    Private Sub UpdateLabelBasedOnValue(ByVal inputString As String, ByVal label As Label, ByVal disconnectedText As String)
-        If inputString.Trim() = "0.0" Then
-            label.Text = disconnectedText
-            label.ForeColor = Color.Red
+        If diff1to2 <= toleranceW AndAlso diff2to3 <= toleranceW AndAlso diff1to3 <= toleranceW Then
+            GroupBox1.Invoke(Sub() GroupBox1.BackColor = Color.FromArgb(128, 255, 128))
+            GroupBox2.Invoke(Sub() GroupBox2.BackColor = Color.FromArgb(128, 255, 128))
+            GroupBox3.Invoke(Sub() GroupBox3.BackColor = Color.FromArgb(128, 255, 128))
         Else
-            label.ForeColor = Color.FromArgb(128, 255, 128)
+            If diff1to2 > toleranceW And diff1to3 > toleranceW Then
+                GroupBox1.Invoke(Sub()
+                                     GroupBox1.BackColor = Color.Red
+                                     Label4.Text = $"diff1to2: {diff1to2:F2}, diff1to3: {diff1to3:F2}"
+                                 End Sub)
+            End If
+            If diff1to2 > toleranceW And diff2to3 > toleranceW Then
+                GroupBox2.Invoke(Sub()
+                                     GroupBox2.BackColor = Color.Red
+                                     Label6.Text = $"diff1to2: {diff1to2:F2}, diff2to3: {diff2to3:F2}"
+                                 End Sub)
+            End If
+            If diff1to3 > toleranceW And diff2to3 > toleranceW Then
+                GroupBox3.Invoke(Sub()
+                                     GroupBox3.BackColor = Color.Red
+                                     Label7.Text = $"diff1to3: {diff1to3:F2}, diff2to3: {diff2to3:F2}"
+                                 End Sub)
+            End If
         End If
+
+        ' Max speed and UI
+        If Total_Speed > maxspeed Then maxspeed = Total_Speed
+        Lbmax.Invoke(Sub() Lbmax.Text = $"{maxspeed} KPH")
+        LbSpeed2.Invoke(Sub() LbSpeed2.Text = $"{Total_Speed} KPH")
     End Sub
+
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
-        ' Check if the denominator (RPM_S or RPM_C) is zero before performing division
         If RPM_S <> 0 AndAlso RPM_C <> 0 Then
-            ' Perform the calculations if the values are valid
-            Dim chainRatio As Decimal = RPM_CR / RPM_S
-            Dim gearRatio As Decimal = RPM_CR / RPM_C
+            actualChainRatio = RPM_CR / RPM_S
+            actualGearRatio = RPM_CR / RPM_C
         End If
     End Sub
 
+    Dim chartTickCounter As Integer = 0
     Private Sub UpdateCharts(speed As Decimal, power As Decimal)
-        Chart1.Series("TOTAL SPEED").Points.AddY(speed)
-        Chart2.Series("POWER").Points.AddY(power)
+        chartTickCounter += 1
+        If chartTickCounter Mod 5 <> 0 Then Return
+        Chart1.Invoke(Sub()
+                          Dim s = Chart1.Series("TOTAL SPEED")
+                          s.Points.AddY(speed)
+                          If s.Points.Count > Limit Then s.Points.RemoveAt(0)
+                      End Sub)
+        Chart2.Invoke(Sub()
+                          Dim s = Chart2.Series("POWER")
+                          s.Points.AddY(power)
+                          If s.Points.Count > Limit Then s.Points.RemoveAt(0)
+                      End Sub)
+    End Sub
 
-        If Chart1.Series("TOTAL SPEED").Points.Count > Limit Then
-            Chart1.Series("TOTAL SPEED").Points.RemoveAt(0)
-        End If
-        If Chart2.Series("POWER").Points.Count > Limit Then
-            Chart2.Series("POWER").Points.RemoveAt(0)
-        End If
-    End Sub
-    Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
-        SerialPort1.Close()
-        Timer1.Stop()
-    End Sub
-    Private Sub ReleaseObject(ByVal obj As Object)
-        Try
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(obj)
-            obj = Nothing
-        Catch ex As Exception
-            obj = Nothing
-        Finally
-            GC.Collect()
-        End Try
-    End Sub
     Private Sub comparsion(actualratio As Decimal)
-        If actualratio >= 0.35556 Then
-            actualgear = 1
-        ElseIf actualratio >= 0.3111 Then
-            actualgear = 2
-        ElseIf actualratio >= 0.27778 Then
-            actualgear = 3
-        ElseIf actualratio >= 0.24444 Then
-            actualgear = 4
-        ElseIf actualratio >= 0.22222 Then
-            actualgear = 5
-        ElseIf actualratio >= 0.18889 Then
-            actualgear = 6
-        End If
+        If actualratio >= 0.35556 Then actualgear = 1
+        If actualratio >= 0.31111 Then actualgear = 2
+        If actualratio >= 0.27778 Then actualgear = 3
+        If actualratio >= 0.24444 Then actualgear = 4
+        If actualratio >= 0.22222 Then actualgear = 5
+        If actualratio >= 0.18889 Then actualgear = 6
     End Sub
+
+    ' --- Port Setup & Settings ---
     Private Sub ButtonScanPort_Click(sender As Object, e As EventArgs) Handles ButtonScanPort.Click
         ComboBoxPort.Items.Clear()
-        Dim myPort As Array
-        myPort = IO.Ports.SerialPort.GetPortNames()
-
-        ' Populate the ComboBox with available ports
-        If myPort.Length > 0 Then
-            ComboBoxPort.Items.AddRange(myPort)
+        Dim ports = SerialPort.GetPortNames()
+        ComboBoxPort.Items.AddRange(ports)
+        If ports.Any() Then
             ComboBoxPort.SelectedIndex = 0
             ButtonConnect.Enabled = True
         Else
-            MsgBox("No COM ports detected", MsgBoxStyle.Information, "Warning !!!")
-            ComboBoxPort.Text = ""
+            MsgBox("No COM ports detected")
             ButtonConnect.Enabled = False
         End If
-
-        ' Expand the ComboBox to show available ports
-        ComboBoxPort.DroppedDown = True
     End Sub
 
     Private Sub ButtonConnect_Click(sender As Object, e As EventArgs) Handles ButtonConnect.Click
         Try
-            ' Check if a port is selected
             If ComboBoxPort.SelectedItem Is Nothing Then
-                MsgBox("Please select a COM port before connecting.", MsgBoxStyle.Exclamation, "Error")
+                MsgBox("Select a COM port first.")
                 Return
             End If
-
-            ' Prevent connecting if the port is already open
             If SerialPort1.IsOpen Then
-                MsgBox("The port is already open.", MsgBoxStyle.Information, "Warning")
+                MsgBox("Port already open.")
                 Return
             End If
-
-            ' Set the port name and open the connection
             SerialPort1.PortName = ComboBoxPort.SelectedItem.ToString()
             SerialPort1.Open()
             Timer1.Start()
-
-            MsgBox("Connected successfully!", MsgBoxStyle.Information, "Success")
-        Catch ex As UnauthorizedAccessException
-            MsgBox("Access to the COM port is denied. Make sure it's not in use by another application.", MsgBoxStyle.Critical, "Error")
+            MsgBox("Connected successfully!")
         Catch ex As Exception
-            MsgBox($"An error occurred: {ex.Message}", MsgBoxStyle.Critical, "Error")
+            MsgBox("Connection error: " & ex.Message)
         End Try
     End Sub
 
-    Private Sub btnSettings_Click(sender As Object, e As EventArgs) Handles btnSettings.Click
-
-        ' Pass the current DistanceToFinish and TargetPowerRanges to the settings form
-        Form2.DistanceToFinish = DTF ' Assuming DistanceToFinish is a property in the main form
-
-        ' Show the settings form and check if the user clicked OK
-        If settingsForm.ShowDialog() = DialogResult.OK Then
-            ' Update the main form's DistanceToFinish with the new value from settingsForm
-
-            ' Calculate the new distance to the finish and update UI
-            Dim DT_F As Decimal = DTF - Distance
-            LbDist.Text = DT_F.ToString()
-
-        End If
+    Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
+        SerialPort1.Close()
+        Timer1.Stop()
     End Sub
 End Class
