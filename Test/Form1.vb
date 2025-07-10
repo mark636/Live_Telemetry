@@ -29,7 +29,7 @@ Public Class Form1
         SerialPort1.Handshake = Handshake.None
         SerialPort1.Encoding = Encoding.UTF8
 
-        Timer1.Interval = 50
+        Timer1.Interval = 40
         Timer1.Start()
 
         InitializeChart(Chart1, "SPEED", {"TOTAL SPEED"})
@@ -66,10 +66,16 @@ Public Class Form1
     End Sub
 
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        Dim linesToProcess As Integer = 5 ' Tune this if needed
         Dim line As String = Nothing
-        If dataQueue.TryDequeue(line) Then
-            ProcessLine(line)
-        End If
+
+        For i As Integer = 1 To linesToProcess
+            If dataQueue.TryDequeue(line) Then
+                ProcessLine(line)
+            Else
+                Exit For
+            End If
+        Next
     End Sub
 
     ' --- Data Processing ---
@@ -162,7 +168,8 @@ Public Class Form1
     Dim chartTickCounter As Integer = 0
     Private Sub UpdateCharts(speed As Decimal, power As Decimal)
         chartTickCounter += 1
-        If chartTickCounter Mod 5 <> 0 Then Return
+        If chartTickCounter Mod 10 <> 0 Then Return ' Update charts less frequently
+
         Chart1.Invoke(Sub()
                           Dim s = Chart1.Series("TOTAL SPEED")
                           s.Points.AddY(speed)
