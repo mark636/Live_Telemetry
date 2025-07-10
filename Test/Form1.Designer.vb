@@ -188,10 +188,10 @@ Partial Class Form1
         Me.Panel1.Controls.Add(Me.LbSenRPML)
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
         Me.Panel1.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.Panel1.Location = New System.Drawing.Point(1523, 0)
+        Me.Panel1.Location = New System.Drawing.Point(1611, 0)
         Me.Panel1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(313, 918)
+        Me.Panel1.Size = New System.Drawing.Size(313, 953)
         Me.Panel1.TabIndex = 58
         '
         'btnSettings
@@ -290,7 +290,7 @@ Partial Class Form1
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(1523, 121)
+        Me.Panel2.Size = New System.Drawing.Size(1611, 121)
         Me.Panel2.TabIndex = 65
         '
         'Label9
@@ -459,7 +459,7 @@ Partial Class Form1
         Me.Panel3.Location = New System.Drawing.Point(0, 121)
         Me.Panel3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(1523, 797)
+        Me.Panel3.Size = New System.Drawing.Size(1611, 832)
         Me.Panel3.TabIndex = 66
         '
         'LbCranks
@@ -777,15 +777,15 @@ Partial Class Form1
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(46, Byte), Integer), CType(CType(51, Byte), Integer), CType(CType(73, Byte), Integer))
-        Me.ClientSize = New System.Drawing.Size(1836, 918)
+        Me.ClientSize = New System.Drawing.Size(1924, 953)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel1)
         Me.ForeColor = System.Drawing.SystemColors.ButtonFace
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
-        Me.MaximizeBox = False
         Me.Name = "Form1"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "MQ SPEED TELEMETRY"
         Me.Panel1.ResumeLayout(False)
         Me.Panel1.PerformLayout()
