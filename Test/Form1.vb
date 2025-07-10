@@ -76,13 +76,13 @@ Public Class Form1
     Private Sub ProcessLine(line As String)
         If String.IsNullOrEmpty(line) OrElse Not line.Contains(",") Then Return
         Dim s() As String = line.Split(",")
-        If s.Length < 27 Then Return
+        If s.Length < 28 Then Return
 
-        If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
+        If Not Decimal.TryParse(s(1), RPM_C) OrElse Not Decimal.TryParse(s(2), RPM_L) OrElse Not Decimal.TryParse(s(3), RPM_R) Then Return
         Decimal.TryParse(s(4), RPM_CR)
-        Decimal.TryParse(s(5), Total_Speed)
-        Decimal.TryParse(s(18), Distance)
-        Decimal.TryParse(s(26), POWER)
+        Decimal.TryParse(s(6), Total_Speed)
+        Decimal.TryParse(s(19), Distance)
+        Decimal.TryParse(s(27), POWER)
 
         LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
         UpdateGearChainRatio(RPM_CR, RPM_S, RPM_C)
@@ -122,6 +122,9 @@ Public Class Form1
             GroupBox1.Invoke(Sub() GroupBox1.BackColor = Color.FromArgb(128, 255, 128))
             GroupBox2.Invoke(Sub() GroupBox2.BackColor = Color.FromArgb(128, 255, 128))
             GroupBox3.Invoke(Sub() GroupBox3.BackColor = Color.FromArgb(128, 255, 128))
+            Label4.Text = "STATUS: OK!"
+            Label6.Text = "STATUS: OK!"
+            Label7.Text = "STATUS: OK!"
         Else
             If diff1to2 > toleranceW And diff1to3 > toleranceW Then
                 GroupBox1.Invoke(Sub()
