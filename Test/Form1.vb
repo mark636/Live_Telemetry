@@ -15,9 +15,13 @@ Public Class Form1
     Dim RPM_C, RPM_L, RPM_R, RPM_CR, RPM_S, Total_Speed, POWER, Steering_A, TEMP, HUMD, PRESS, Distance, actualGearRatio, actualChainRatio As Decimal
     Dim maxspeed As Decimal = -2
     Dim actualgear As Integer
+    Dim Gear As Integer
     Dim Limit As Integer = 20
     Dim DTF As Decimal
     Dim settingsForm As New Form2
+    Dim BatG As Decimal
+    Dim BatPi As Decimal
+    Dim BatAna As Decimal
 
     ' --- Initialization ---
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -84,13 +88,22 @@ Public Class Form1
         Dim s() As String = line.Split(",")
         If s.Length < 28 Then Return
 
-        If Not Decimal.TryParse(s(1), RPM_C) OrElse Not Decimal.TryParse(s(2), RPM_L) OrElse Not Decimal.TryParse(s(3), RPM_R) Then Return
+        If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
         Decimal.TryParse(s(4), RPM_CR)
-        Decimal.TryParse(s(6), Total_Speed)
-        Decimal.TryParse(s(19), Distance)
+        Decimal.TryParse(s(5), Total_Speed)
+        Decimal.TryParse(s(24), Distance)
         Decimal.TryParse(s(27), POWER)
+        Decimal.TryParse(s(7), Gear)
+        Decimal.TryParse(s(8), BatG)
+        Decimal.TryParse(s(18), BatPi)
+        Decimal.TryParse(s(19), BatAna)
 
         LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
+        LbGear2.Invoke(Sub() LbGear2.Text = Gear.ToString())
+        LbBatG.Invoke(Sub() LbBatG.Text = BatG.ToString())
+        LbBatteryPi.Invoke(Sub() LbBatteryPi.Text = BatPi.ToString())
+        LbAnalog.Invoke(Sub() LbAnalog.Text = BatAna.ToString())
+
         UpdateGearChainRatio(RPM_CR, RPM_S, RPM_C)
         UpdateCharts(Total_Speed, POWER)
 
@@ -107,7 +120,7 @@ Public Class Form1
             If actualGearRatio < expected - tolerance OrElse actualGearRatio > expected + tolerance Then
                 comparsion(actualGearRatio)
                 Label8.Invoke(Sub()
-                                  Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualgear}"
+                                  Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualGearRatio}"
                                   GroupBox4.BackColor = Color.Red
                               End Sub)
             Else
