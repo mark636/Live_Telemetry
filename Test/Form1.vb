@@ -89,10 +89,12 @@ Public Class Form1
         If s.Length < 28 Then Return
 
         If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
-        Decimal.TryParse(s(4), RPM_CR)
+        Decimal.TryParse(s(3), RPM_CR)
+        Decimal.TryParse(s(0), RPM_C)
+        Decimal.TryParse(s(4), RPM_S)
         Decimal.TryParse(s(5), Total_Speed)
         Decimal.TryParse(s(24), Distance)
-        Decimal.TryParse(s(27), POWER)
+        Decimal.TryParse(s(26), POWER)
         Decimal.TryParse(s(7), Gear)
         Decimal.TryParse(s(8), BatG)
         Decimal.TryParse(s(18), BatPi)
@@ -101,6 +103,7 @@ Public Class Form1
         LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
         LbGear2.Invoke(Sub() LbGear2.Text = Gear.ToString())
         LbBatG.Invoke(Sub() LbBatG.Text = BatG.ToString())
+        LbCranks.Invoke(Sub() LbCranks.Text = RPM_CR.ToString())
         LbBatteryPi.Invoke(Sub() LbBatteryPi.Text = BatPi.ToString())
         LbAnalog.Invoke(Sub() LbAnalog.Text = BatAna.ToString())
 
@@ -108,34 +111,42 @@ Public Class Form1
         UpdateCharts(Total_Speed, POWER)
 
         ' --- Gear Check ---
-        Dim expectedGearRatios As New Dictionary(Of String, Decimal) From {
-            {"1.0", 0.35556}, {"2", 0.31111}, {"3.0", 0.27778},
-            {"4.0", 0.24444}, {"5.0", 0.22222}, {"6.0", 0.18889}
+        Dim expectedGearRatios As New Dictionary(Of Decimal, Decimal) From {
+        {1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D},
+        {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}
         }
 
-        Dim gearKey As String = s(7).Trim()
-        If expectedGearRatios.ContainsKey(gearKey) Then
-            Dim expected = expectedGearRatios(gearKey)
-            Dim tolerance = expected * 0.02
-            If actualGearRatio < expected - tolerance OrElse actualGearRatio > expected + tolerance Then
-                comparsion(actualGearRatio)
-                Label8.Invoke(Sub()
-                                  Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualGearRatio}"
-                                  GroupBox4.BackColor = Color.Red
-                              End Sub)
-            Else
-                Label8.Invoke(Sub()
-                                  Label8.Text = "STATUS: OK!"
-                                  GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
-                              End Sub)
+        Dim gearKey As Decimal
+
+        If Decimal.TryParse(s(7).Trim(), gearKey) Then
+            If expectedGearRatios.ContainsKey(gearKey) Then
+                Dim expected = expectedGearRatios(gearKey)
+                Dim toleranceG = 0.3D
+                If actualGearRatio < (expected - toleranceG) Or actualGearRatio > (expected + toleranceG) Then
+                    comparsion(actualGearRatio)
+                    Label8.Invoke(Sub()
+                                      Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualgear}"
+                                      GroupBox4.BackColor = Color.Red
+                                  End Sub)
+                Else
+                    Label8.Invoke(Sub()
+                                      Label8.Text = "STATUS: OK!"
+                                      GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
+                                  End Sub)
+                End If
             End If
+        Else
+            Label8.Invoke(Sub()
+                              Label8.Text = "Invalid Gear Data"
+                              GroupBox4.BackColor = Color.Gray
+                          End Sub)
         End If
 
         ' --- Wheel RPM Comparison ---
         Dim diff1to2 As Decimal = Math.Abs(RPM_C - RPM_L)
         Dim diff2to3 As Decimal = Math.Abs(RPM_L - RPM_R)
         Dim diff1to3 As Decimal = Math.Abs(RPM_C - RPM_R)
-        Dim toleranceW = 11D
+        Dim toleranceW = 15D
 
         If diff1to2 <= toleranceW AndAlso diff2to3 <= toleranceW AndAlso diff1to3 <= toleranceW Then
             GroupBox1.Invoke(Sub() GroupBox1.BackColor = Color.FromArgb(128, 255, 128))
@@ -172,9 +183,11 @@ Public Class Form1
     End Sub
 
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
-        If RPM_S <> 0 AndAlso RPM_C <> 0 Then
-            actualChainRatio = RPM_CR / RPM_S
-            actualGearRatio = RPM_CR / RPM_C
+        If RPM_CR > 0 Then
+            actualGearRatio = RPM_S / RPM_CR
+        End If
+        If RPM_CR > 0 Then
+            actualChainRatio = RPM_S / RPM_CR
         End If
     End Sub
 
@@ -196,12 +209,21 @@ Public Class Form1
     End Sub
 
     Private Sub comparsion(actualratio As Decimal)
-        If actualratio >= 0.35556 Then actualgear = 1
-        If actualratio >= 0.31111 Then actualgear = 2
-        If actualratio >= 0.27778 Then actualgear = 3
-        If actualratio >= 0.24444 Then actualgear = 4
-        If actualratio >= 0.22222 Then actualgear = 5
-        If actualratio >= 0.18889 Then actualgear = 6
+        If actualratio <= 2.81 Then
+            actualgear = 1
+        ElseIf actualratio >= 2.81 And actualratio <= 3.21 Then
+            actualgear = 2
+        ElseIf actualratio >= 3.21 And actualratio <= 3.6 Then
+            actualgear = 3
+        ElseIf actualratio >= 3.6 And actualratio <= 4.09 Then
+            actualgear = 4
+        ElseIf actualratio >= 4.09 And actualratio <= 4.5 Then
+            actualgear = 5
+        ElseIf actualratio >= 4.5 And actualratio <= 5.29 Then
+            actualgear = 6
+        Else
+            actualgear = 0
+        End If
     End Sub
 
     ' --- Port Setup & Settings ---

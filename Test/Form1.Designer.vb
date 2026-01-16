@@ -103,7 +103,7 @@ Partial Class Form1
         Me.btnDisconnect.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnDisconnect.ForeColor = System.Drawing.Color.Transparent
         Me.btnDisconnect.Location = New System.Drawing.Point(133, 62)
-        Me.btnDisconnect.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.btnDisconnect.Margin = New System.Windows.Forms.Padding(4)
         Me.btnDisconnect.Name = "btnDisconnect"
         Me.btnDisconnect.Size = New System.Drawing.Size(165, 39)
         Me.btnDisconnect.TabIndex = 9
@@ -114,7 +114,7 @@ Partial Class Form1
         '
         Me.ComboBoxPort.FormattingEnabled = True
         Me.ComboBoxPort.Location = New System.Drawing.Point(133, 23)
-        Me.ComboBoxPort.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.ComboBoxPort.Margin = New System.Windows.Forms.Padding(4)
         Me.ComboBoxPort.Name = "ComboBoxPort"
         Me.ComboBoxPort.Size = New System.Drawing.Size(160, 24)
         Me.ComboBoxPort.TabIndex = 10
@@ -128,7 +128,7 @@ Partial Class Form1
         Me.ButtonScanPort.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ButtonScanPort.ForeColor = System.Drawing.Color.Transparent
         Me.ButtonScanPort.Location = New System.Drawing.Point(25, 21)
-        Me.ButtonScanPort.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.ButtonScanPort.Margin = New System.Windows.Forms.Padding(4)
         Me.ButtonScanPort.Name = "ButtonScanPort"
         Me.ButtonScanPort.Size = New System.Drawing.Size(100, 32)
         Me.ButtonScanPort.TabIndex = 11
@@ -143,7 +143,7 @@ Partial Class Form1
         Me.ButtonConnect.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ButtonConnect.ForeColor = System.Drawing.Color.Transparent
         Me.ButtonConnect.Location = New System.Drawing.Point(25, 62)
-        Me.ButtonConnect.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.ButtonConnect.Margin = New System.Windows.Forms.Padding(4)
         Me.ButtonConnect.Name = "ButtonConnect"
         Me.ButtonConnect.Size = New System.Drawing.Size(100, 39)
         Me.ButtonConnect.TabIndex = 12
@@ -189,7 +189,7 @@ Partial Class Form1
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
         Me.Panel1.ForeColor = System.Drawing.SystemColors.ButtonFace
         Me.Panel1.Location = New System.Drawing.Point(1611, 0)
-        Me.Panel1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel1.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(313, 953)
         Me.Panel1.TabIndex = 58
@@ -203,7 +203,7 @@ Partial Class Form1
         Me.btnSettings.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.btnSettings.ForeColor = System.Drawing.Color.Transparent
         Me.btnSettings.Location = New System.Drawing.Point(69, 833)
-        Me.btnSettings.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.btnSettings.Margin = New System.Windows.Forms.Padding(4)
         Me.btnSettings.Name = "btnSettings"
         Me.btnSettings.Size = New System.Drawing.Size(165, 39)
         Me.btnSettings.TabIndex = 65
@@ -288,7 +288,7 @@ Partial Class Form1
         Me.Panel2.Controls.Add(Me.ButtonScanPort)
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
-        Me.Panel2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel2.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel2.Name = "Panel2"
         Me.Panel2.Size = New System.Drawing.Size(1611, 121)
         Me.Panel2.TabIndex = 65
@@ -457,7 +457,7 @@ Partial Class Form1
         Me.Panel3.Controls.Add(Me.Chart1)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Panel3.Location = New System.Drawing.Point(0, 121)
-        Me.Panel3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Panel3.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel3.Name = "Panel3"
         Me.Panel3.Size = New System.Drawing.Size(1611, 832)
         Me.Panel3.TabIndex = 66
@@ -599,7 +599,7 @@ Partial Class Form1
         Legend1.Name = "Legend1"
         Me.Chart2.Legends.Add(Legend1)
         Me.Chart2.Location = New System.Drawing.Point(771, 92)
-        Me.Chart2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Chart2.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart2.Name = "Chart2"
         Series1.ChartArea = "ChartArea1"
         Series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
@@ -617,9 +617,9 @@ Partial Class Form1
         Me.GroupBox5.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox5.ForeColor = System.Drawing.Color.Black
         Me.GroupBox5.Location = New System.Drawing.Point(1239, 542)
-        Me.GroupBox5.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox5.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox5.Padding = New System.Windows.Forms.Padding(4)
         Me.GroupBox5.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox5.TabIndex = 63
         Me.GroupBox5.TabStop = False
@@ -644,9 +644,9 @@ Partial Class Form1
         Me.GroupBox4.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox4.ForeColor = System.Drawing.Color.Black
         Me.GroupBox4.Location = New System.Drawing.Point(931, 542)
-        Me.GroupBox4.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox4.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox4.Padding = New System.Windows.Forms.Padding(4)
         Me.GroupBox4.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox4.TabIndex = 64
         Me.GroupBox4.TabStop = False
@@ -671,9 +671,9 @@ Partial Class Form1
         Me.GroupBox3.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox3.ForeColor = System.Drawing.Color.Black
         Me.GroupBox3.Location = New System.Drawing.Point(632, 542)
-        Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4)
         Me.GroupBox3.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox3.TabIndex = 65
         Me.GroupBox3.TabStop = False
@@ -698,9 +698,9 @@ Partial Class Form1
         Me.GroupBox2.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.ForeColor = System.Drawing.Color.Black
         Me.GroupBox2.Location = New System.Drawing.Point(336, 542)
-        Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4)
         Me.GroupBox2.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox2.TabIndex = 66
         Me.GroupBox2.TabStop = False
@@ -725,9 +725,9 @@ Partial Class Form1
         Me.GroupBox1.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox1.ForeColor = System.Drawing.Color.Black
         Me.GroupBox1.Location = New System.Drawing.Point(28, 542)
-        Me.GroupBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox1.Padding = New System.Windows.Forms.Padding(4)
         Me.GroupBox1.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox1.TabIndex = 62
         Me.GroupBox1.TabStop = False
@@ -748,7 +748,7 @@ Partial Class Form1
         'TextBox1
         '
         Me.TextBox1.Location = New System.Drawing.Point(839, 238)
-        Me.TextBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.TextBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(609, 22)
         Me.TextBox1.TabIndex = 58
@@ -760,7 +760,7 @@ Partial Class Form1
         Legend2.Name = "Legend1"
         Me.Chart1.Legends.Add(Legend2)
         Me.Chart1.Location = New System.Drawing.Point(28, 92)
-        Me.Chart1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Chart1.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart1.Name = "Chart1"
         Series2.ChartArea = "ChartArea1"
         Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
@@ -783,7 +783,7 @@ Partial Class Form1
         Me.Controls.Add(Me.Panel1)
         Me.ForeColor = System.Drawing.SystemColors.ButtonFace
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "MQ SPEED TELEMETRY"
