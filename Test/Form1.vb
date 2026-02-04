@@ -3,13 +3,18 @@ Imports System.IO.Ports
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Text
 Imports System.Collections.Concurrent
-
+Imports System.Diagnostics
 Public Class Form1
     ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
     Dim WithEvents Timer1 As New Timer
     Dim dataQueue As New ConcurrentQueue(Of String)
     Dim partialLine As String = ""
+
+    '-----StopWatch--------------'
+    Private sw As New Stopwatch()
+    Private lapTimes As New List(Of TimeSpan)()
+    Private previousLapTime As TimeSpan = TimeSpan.Zero
 
     ' --- Metrics ---
     Dim RPM_C, RPM_L, RPM_R, RPM_CR, RPM_S, Total_Speed, POWER, Steering_A, TEMP, HUMD, PRESS, Distance, actualGearRatio, actualChainRatio As Decimal
@@ -41,6 +46,11 @@ Public Class Form1
 
         Chart1.ChartAreas(0).AxisY.Maximum = 120
         Chart2.ChartAreas(0).AxisY.Maximum = 450
+
+        lbLaps.DrawMode = DrawMode.OwnerDrawFixed
+
+        ' Enable KeyPreview so the form receives key events before controls
+        Me.KeyPreview = True
     End Sub
 
     Private Sub InitializeChart(chart As Chart, title As String, seriesNames() As String)
@@ -80,6 +90,13 @@ Public Class Form1
                 Exit For
             End If
         Next
+
+
+    End Sub
+
+    Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
+        ' Update the main display label with the formatted time
+        lblTime.Text = sw.Elapsed.ToString("hh\:mm\:ss\.fff")
     End Sub
 
     ' --- Data Processing ---
@@ -220,7 +237,7 @@ Public Class Form1
                           If s.Points.Count > Limit Then s.Points.RemoveAt(0)
                       End Sub)
     End Sub
-    'To calculate the gear ratio its just chainring/ Rear gear 
+    'To calculate the gear ratio its just chainring gear/ Rear gear 
     Private Sub comparsion(actualratio As Decimal)
         If actualratio <= 2.81 Then
             actualgear = 1
@@ -275,5 +292,82 @@ Public Class Form1
     Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
         SerialPort1.Close()
         Timer1.Stop()
+    End Sub
+
+    Private Sub btnStartStop_click(sender As Object, e As EventArgs) Handles btnStartStop.Click
+        If sw.IsRunning Then
+            sw.Stop()
+            Timer2.Enabled = False
+            btnStartStop.Text = "Start"
+            btnReset.Text = "Reset"
+        Else
+            sw.Start()
+            Timer2.Enabled = True
+            btnStartStop.Text = "Stop"
+            btnReset.Text = "Lap"
+        End If
+    End Sub
+    Private Sub btnLapReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
+        If sw.IsRunning Then
+            ' Lap functionality
+            Dim currentLapTime As TimeSpan = sw.Elapsed
+            Dim lapInterval As TimeSpan = currentLapTime.Subtract(previousLapTime)
+
+            ' Format the lap time string
+            Dim lapText As String = $"Lap {lapTimes.Count + 1}: {lapInterval.ToString("hh\:mm\:ss\.fff")}"
+
+            ' Add to ListBox and list
+            lbLaps.Items.Insert(0, lapText)
+            lapTimes.Add(currentLapTime)
+            previousLapTime = currentLapTime
+        Else
+            ' Reset functionality
+            sw.Reset()
+            previousLapTime = TimeSpan.Zero
+            lapTimes.Clear()
+            lbLaps.Items.Clear()
+            lblTime.Text = "00:00:00.000"
+            btnReset.Text = "Lap"
+        End If
+    End Sub
+
+
+    ' Add this to enable custom drawing for the ListBox
+    Private Sub lbLaps_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lbLaps.DrawItem
+        If e.Index < 0 Then Return
+
+        e.DrawBackground()
+
+        Dim itemText As String = lbLaps.Items(e.Index).ToString()
+        Dim brush As Brush = Brushes.Black
+
+        ' Determine color based on comparison with previous lap
+        ' Index 0 is the most recent lap
+        If e.Index < lbLaps.Items.Count - 1 Then ' Not the first lap
+            Dim currentLapNum As Integer = lapTimes.Count - e.Index
+            Dim previousLapNum As Integer = currentLapNum - 1
+
+            If previousLapNum > 0 Then
+                Dim currentInterval As TimeSpan = lapTimes(currentLapNum - 1).Subtract(If(currentLapNum > 1, lapTimes(currentLapNum - 2), TimeSpan.Zero))
+                Dim previousInterval As TimeSpan = lapTimes(previousLapNum - 1).Subtract(If(previousLapNum > 1, lapTimes(previousLapNum - 2), TimeSpan.Zero))
+
+                If currentInterval < previousInterval Then
+                    brush = Brushes.Green ' Faster lap
+                ElseIf currentInterval > previousInterval Then
+                    brush = Brushes.Red ' Slower lap
+                End If
+            End If
+        End If
+
+        e.Graphics.DrawString(itemText, e.Font, brush, e.Bounds)
+        e.DrawFocusRectangle()
+    End Sub
+
+    ' Add this event to handle Enter key press
+    Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.SuppressKeyPress = True ' Prevent beep sound
+            btnLapReset_Click(sender, e)
+        End If
     End Sub
 End Class

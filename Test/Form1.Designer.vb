@@ -22,12 +22,13 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Me.components = New System.ComponentModel.Container()
+        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.btnDisconnect = New System.Windows.Forms.Button()
@@ -54,18 +55,17 @@ Partial Class Form1
         Me.Lbmax = New System.Windows.Forms.Label()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.LbGear = New System.Windows.Forms.Label()
         Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.lbLaps = New System.Windows.Forms.ListBox()
+        Me.btnReset = New System.Windows.Forms.Button()
+        Me.btnStartStop = New System.Windows.Forms.Button()
+        Me.lblTime = New System.Windows.Forms.Label()
         Me.LbCranks = New System.Windows.Forms.Label()
         Me.Label13 = New System.Windows.Forms.Label()
-        Me.TargetPWR = New System.Windows.Forms.Label()
-        Me.Label12 = New System.Windows.Forms.Label()
-        Me.LbDist = New System.Windows.Forms.Label()
         Me.LbSpeed2 = New System.Windows.Forms.Label()
         Me.LbSpeed = New System.Windows.Forms.Label()
         Me.LbPower = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
         Me.Chart2 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.LbChain = New System.Windows.Forms.Label()
@@ -79,6 +79,7 @@ Partial Class Form1
         Me.Label4 = New System.Windows.Forms.Label()
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.Panel3.SuspendLayout()
@@ -421,37 +422,23 @@ Partial Class Form1
         Me.Label1.TabIndex = 65
         Me.Label1.Text = "MAX SPEED:"
         '
-        'LbGear
-        '
-        Me.LbGear.AutoSize = True
-        Me.LbGear.BackColor = System.Drawing.Color.Transparent
-        Me.LbGear.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbGear.ForeColor = System.Drawing.Color.Transparent
-        Me.LbGear.Location = New System.Drawing.Point(145, 713)
-        Me.LbGear.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbGear.Name = "LbGear"
-        Me.LbGear.Size = New System.Drawing.Size(29, 35)
-        Me.LbGear.TabIndex = 67
-        Me.LbGear.Text = "0"
-        '
         'Panel3
         '
+        Me.Panel3.Controls.Add(Me.lbLaps)
+        Me.Panel3.Controls.Add(Me.btnReset)
+        Me.Panel3.Controls.Add(Me.btnStartStop)
+        Me.Panel3.Controls.Add(Me.lblTime)
         Me.Panel3.Controls.Add(Me.LbCranks)
         Me.Panel3.Controls.Add(Me.Label13)
-        Me.Panel3.Controls.Add(Me.TargetPWR)
-        Me.Panel3.Controls.Add(Me.Label12)
-        Me.Panel3.Controls.Add(Me.LbDist)
         Me.Panel3.Controls.Add(Me.LbSpeed2)
         Me.Panel3.Controls.Add(Me.LbSpeed)
         Me.Panel3.Controls.Add(Me.LbPower)
         Me.Panel3.Controls.Add(Me.Label11)
-        Me.Panel3.Controls.Add(Me.Label3)
         Me.Panel3.Controls.Add(Me.Chart2)
         Me.Panel3.Controls.Add(Me.GroupBox5)
         Me.Panel3.Controls.Add(Me.GroupBox4)
         Me.Panel3.Controls.Add(Me.GroupBox3)
         Me.Panel3.Controls.Add(Me.GroupBox2)
-        Me.Panel3.Controls.Add(Me.LbGear)
         Me.Panel3.Controls.Add(Me.GroupBox1)
         Me.Panel3.Controls.Add(Me.TextBox1)
         Me.Panel3.Controls.Add(Me.Chart1)
@@ -461,6 +448,59 @@ Partial Class Form1
         Me.Panel3.Name = "Panel3"
         Me.Panel3.Size = New System.Drawing.Size(1611, 832)
         Me.Panel3.TabIndex = 66
+        '
+        'lbLaps
+        '
+        Me.lbLaps.BackColor = System.Drawing.Color.FromArgb(CType(CType(46, Byte), Integer), CType(CType(51, Byte), Integer), CType(CType(73, Byte), Integer))
+        Me.lbLaps.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lbLaps.Font = New System.Drawing.Font("Nirmala UI", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.lbLaps.ForeColor = System.Drawing.Color.White
+        Me.lbLaps.FormattingEnabled = True
+        Me.lbLaps.ItemHeight = 25
+        Me.lbLaps.Location = New System.Drawing.Point(572, 712)
+        Me.lbLaps.Name = "lbLaps"
+        Me.lbLaps.Size = New System.Drawing.Size(476, 75)
+        Me.lbLaps.TabIndex = 86
+        '
+        'btnReset
+        '
+        Me.btnReset.FlatAppearance.BorderSize = 0
+        Me.btnReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(24, Byte), Integer), CType(CType(30, Byte), Integer), CType(CType(54, Byte), Integer))
+        Me.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnReset.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnReset.ForeColor = System.Drawing.Color.Transparent
+        Me.btnReset.Location = New System.Drawing.Point(402, 723)
+        Me.btnReset.Margin = New System.Windows.Forms.Padding(4)
+        Me.btnReset.Name = "btnReset"
+        Me.btnReset.Size = New System.Drawing.Size(123, 39)
+        Me.btnReset.TabIndex = 85
+        Me.btnReset.Text = "Reset"
+        Me.btnReset.UseVisualStyleBackColor = True
+        '
+        'btnStartStop
+        '
+        Me.btnStartStop.FlatAppearance.BorderSize = 0
+        Me.btnStartStop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(24, Byte), Integer), CType(CType(30, Byte), Integer), CType(CType(54, Byte), Integer))
+        Me.btnStartStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnStartStop.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnStartStop.ForeColor = System.Drawing.Color.Transparent
+        Me.btnStartStop.Location = New System.Drawing.Point(255, 723)
+        Me.btnStartStop.Margin = New System.Windows.Forms.Padding(4)
+        Me.btnStartStop.Name = "btnStartStop"
+        Me.btnStartStop.Size = New System.Drawing.Size(128, 39)
+        Me.btnStartStop.TabIndex = 84
+        Me.btnStartStop.Text = "Start"
+        Me.btnStartStop.UseVisualStyleBackColor = True
+        '
+        'lblTime
+        '
+        Me.lblTime.AutoSize = True
+        Me.lblTime.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold)
+        Me.lblTime.Location = New System.Drawing.Point(33, 721)
+        Me.lblTime.Name = "lblTime"
+        Me.lblTime.Size = New System.Drawing.Size(92, 35)
+        Me.lblTime.TabIndex = 83
+        Me.lblTime.Text = "Label3"
         '
         'LbCranks
         '
@@ -487,45 +527,6 @@ Partial Class Form1
         Me.Label13.Size = New System.Drawing.Size(121, 35)
         Me.Label13.TabIndex = 81
         Me.Label13.Text = "Cadence:"
-        '
-        'TargetPWR
-        '
-        Me.TargetPWR.AutoSize = True
-        Me.TargetPWR.BackColor = System.Drawing.Color.Transparent
-        Me.TargetPWR.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TargetPWR.ForeColor = System.Drawing.Color.Transparent
-        Me.TargetPWR.Location = New System.Drawing.Point(733, 713)
-        Me.TargetPWR.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.TargetPWR.Name = "TargetPWR"
-        Me.TargetPWR.Size = New System.Drawing.Size(29, 35)
-        Me.TargetPWR.TabIndex = 80
-        Me.TargetPWR.Text = "0"
-        '
-        'Label12
-        '
-        Me.Label12.AutoSize = True
-        Me.Label12.BackColor = System.Drawing.Color.Transparent
-        Me.Label12.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label12.ForeColor = System.Drawing.Color.Transparent
-        Me.Label12.Location = New System.Drawing.Point(536, 713)
-        Me.Label12.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(177, 35)
-        Me.Label12.TabIndex = 79
-        Me.Label12.Text = "Target Power:"
-        '
-        'LbDist
-        '
-        Me.LbDist.AutoSize = True
-        Me.LbDist.BackColor = System.Drawing.Color.Transparent
-        Me.LbDist.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbDist.ForeColor = System.Drawing.Color.Transparent
-        Me.LbDist.Location = New System.Drawing.Point(289, 713)
-        Me.LbDist.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbDist.Name = "LbDist"
-        Me.LbDist.Size = New System.Drawing.Size(29, 35)
-        Me.LbDist.TabIndex = 75
-        Me.LbDist.Text = "0"
         '
         'LbSpeed2
         '
@@ -579,33 +580,20 @@ Partial Class Form1
         Me.Label11.TabIndex = 75
         Me.Label11.Text = "POWER:"
         '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.BackColor = System.Drawing.Color.Transparent
-        Me.Label3.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.ForeColor = System.Drawing.Color.Transparent
-        Me.Label3.Location = New System.Drawing.Point(33, 713)
-        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(229, 35)
-        Me.Label3.TabIndex = 68
-        Me.Label3.Text = "Distance to Finish:"
-        '
         'Chart2
         '
-        ChartArea1.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea1)
-        Legend1.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend1)
+        ChartArea3.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea3)
+        Legend3.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend3)
         Me.Chart2.Location = New System.Drawing.Point(771, 92)
         Me.Chart2.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart2.Name = "Chart2"
-        Series1.ChartArea = "ChartArea1"
-        Series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
-        Series1.Legend = "Legend1"
-        Series1.Name = "Series1"
-        Me.Chart2.Series.Add(Series1)
+        Series3.ChartArea = "ChartArea1"
+        Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
+        Series3.Legend = "Legend1"
+        Series3.Name = "Series1"
+        Me.Chart2.Series.Add(Series3)
         Me.Chart2.Size = New System.Drawing.Size(735, 418)
         Me.Chart2.TabIndex = 67
         Me.Chart2.Text = "Chart2"
@@ -755,18 +743,18 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea2.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea2)
-        Legend2.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend2)
+        ChartArea4.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea4)
+        Legend4.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend4)
         Me.Chart1.Location = New System.Drawing.Point(28, 92)
         Me.Chart1.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart1.Name = "Chart1"
-        Series2.ChartArea = "ChartArea1"
-        Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
-        Series2.Legend = "Legend1"
-        Series2.Name = "Series1"
-        Me.Chart1.Series.Add(Series2)
+        Series4.ChartArea = "ChartArea1"
+        Series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
+        Series4.Legend = "Legend1"
+        Series4.Name = "Series1"
+        Me.Chart1.Series.Add(Series4)
         Me.Chart1.Size = New System.Drawing.Size(735, 418)
         Me.Chart1.TabIndex = 59
         Me.Chart1.Text = "Chart1"
@@ -841,21 +829,21 @@ Partial Class Form1
     Friend WithEvents Label10 As Label
     Friend WithEvents LbBatG As Label
     Friend WithEvents Lbmax As Label
-    Friend WithEvents LbGear As Label
     Friend WithEvents Label2 As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents Label3 As Label
     Friend WithEvents LbGear2 As Label
     Friend WithEvents LbPower As Label
     Friend WithEvents Label11 As Label
     Friend WithEvents LbSpeed2 As Label
     Friend WithEvents LbSpeed As Label
-    Friend WithEvents LbDist As Label
     Friend WithEvents Label9 As Label
-    Friend WithEvents TargetPWR As Label
-    Friend WithEvents Label12 As Label
     Friend WithEvents LbCranks As Label
     Friend WithEvents Label13 As Label
     Friend WithEvents btnSettings As Button
+    Friend WithEvents lbLaps As ListBox
+    Friend WithEvents btnReset As Button
+    Friend WithEvents btnStartStop As Button
+    Friend WithEvents lblTime As Label
+    Friend WithEvents Timer2 As Timer
 End Class
