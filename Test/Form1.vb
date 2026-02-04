@@ -117,11 +117,10 @@ Public Class Form1
         }
 
         Dim gearKey As Decimal
-
+        Dim toleranceG = 0.3D
         If Decimal.TryParse(s(7).Trim(), gearKey) Then
             If expectedGearRatios.ContainsKey(gearKey) Then
                 Dim expected = expectedGearRatios(gearKey)
-                Dim toleranceG = 0.3D
                 If actualGearRatio < (expected - toleranceG) Or actualGearRatio > (expected + toleranceG) Then
                     comparsion(actualGearRatio)
                     Label8.Invoke(Sub()
@@ -176,6 +175,20 @@ Public Class Form1
             End If
         End If
 
+        '------ Rear gear ratio ----'
+        Dim expectedrgratio = 1.4375 'Intermediate drive teeth/ freewheel 
+        If actualChainRatio < (expectedrgratio - toleranceG) Or actualGearRatio > (expectedrgratio + toleranceG) Then
+            LbChain.Invoke(Sub()
+                               LbChain.Text = $"Rear RATIO: {actualChainRatio:F2}"
+                               GroupBox4.BackColor = Color.Red
+                           End Sub)
+        Else
+            LbChain.Invoke(Sub()
+                               LbChain.Text = "STATUS: OK!"
+                               GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
+                           End Sub)
+        End If
+
         ' Max speed and UI
         If Total_Speed > maxspeed Then maxspeed = Total_Speed
         Lbmax.Invoke(Sub() Lbmax.Text = $"{maxspeed} KPH")
@@ -207,7 +220,7 @@ Public Class Form1
                           If s.Points.Count > Limit Then s.Points.RemoveAt(0)
                       End Sub)
     End Sub
-
+    'To calculate the gear ratio its just chainring/ Rear gear 
     Private Sub comparsion(actualratio As Decimal)
         If actualratio <= 2.81 Then
             actualgear = 1

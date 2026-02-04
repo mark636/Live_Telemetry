@@ -623,7 +623,7 @@ Partial Class Form1
         Me.GroupBox5.Size = New System.Drawing.Size(267, 123)
         Me.GroupBox5.TabIndex = 63
         Me.GroupBox5.TabStop = False
-        Me.GroupBox5.Text = "CHAINS"
+        Me.GroupBox5.Text = "Rear Ratio"
         '
         'LbChain
         '
