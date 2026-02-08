@@ -27,6 +27,9 @@ Public Class Form1
     Dim BatG As Decimal
     Dim BatPi As Decimal
     Dim BatAna As Decimal
+    Dim rl As Decimal
+    Dim ph As Decimal
+    Dim yw As Decimal
 
     ' --- Initialization ---
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -90,32 +93,32 @@ Public Class Form1
                 Exit For
             End If
         Next
-
-
     End Sub
-
     Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
         ' Update the main display label with the formatted time
-        lblTime.Text = sw.Elapsed.ToString("hh\:mm\:ss\.fff")
+        lblTime.Text = sw.Elapsed.ToString("mm\:ss\.fff")
     End Sub
 
     ' --- Data Processing ---
     Private Sub ProcessLine(line As String)
         If String.IsNullOrEmpty(line) OrElse Not line.Contains(",") Then Return
         Dim s() As String = line.Split(",")
-        If s.Length < 28 Then Return
+        If s.Length < 25 Then Return
 
         If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
         Decimal.TryParse(s(3), RPM_CR)
         Decimal.TryParse(s(0), RPM_C)
         Decimal.TryParse(s(4), RPM_S)
         Decimal.TryParse(s(5), Total_Speed)
-        Decimal.TryParse(s(24), Distance)
-        Decimal.TryParse(s(26), POWER)
+        Decimal.TryParse(s(22), Distance)
+        Decimal.TryParse(s(23), POWER)
         Decimal.TryParse(s(7), Gear)
         Decimal.TryParse(s(8), BatG)
-        Decimal.TryParse(s(18), BatPi)
-        Decimal.TryParse(s(19), BatAna)
+        Decimal.TryParse(s(15), BatPi)
+        Decimal.TryParse(s(16), BatAna)
+        Decimal.TryParse(s(9), rl)
+        Decimal.TryParse(s(10), ph)
+        Decimal.TryParse(s(11), yw)
 
         LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
         LbGear2.Invoke(Sub() LbGear2.Text = Gear.ToString())
@@ -123,6 +126,9 @@ Public Class Form1
         LbCranks.Invoke(Sub() LbCranks.Text = RPM_CR.ToString())
         LbBatteryPi.Invoke(Sub() LbBatteryPi.Text = BatPi.ToString())
         LbAnalog.Invoke(Sub() LbAnalog.Text = BatAna.ToString())
+        LbSenRl.Invoke(Sub() LbSenRl.Text = rl.ToString())
+        LbSenPH.Invoke(Sub() LbSenPH.Text = ph.ToString())
+        LbSenYW.Invoke(Sub() LbSenYW.Text = yw.ToString())
 
         UpdateGearChainRatio(RPM_CR, RPM_S, RPM_C)
         UpdateCharts(Total_Speed, POWER)
@@ -197,12 +203,12 @@ Public Class Form1
         If actualChainRatio < (expectedrgratio - toleranceG) Or actualGearRatio > (expectedrgratio + toleranceG) Then
             LbChain.Invoke(Sub()
                                LbChain.Text = $"Rear RATIO: {actualChainRatio:F2}"
-                               GroupBox4.BackColor = Color.Red
+                               GroupBox5.BackColor = Color.Red
                            End Sub)
         Else
             LbChain.Invoke(Sub()
                                LbChain.Text = "STATUS: OK!"
-                               GroupBox4.BackColor = Color.FromArgb(128, 255, 128)
+                               GroupBox5.BackColor = Color.FromArgb(128, 255, 128)
                            End Sub)
         End If
 
@@ -215,9 +221,7 @@ Public Class Form1
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
         If RPM_CR > 0 Then
             actualGearRatio = RPM_S / RPM_CR
-        End If
-        If RPM_CR > 0 Then
-            actualChainRatio = RPM_S / RPM_CR
+            actualChainRatio = RPM_S / RPM_C
         End If
     End Sub
 
@@ -288,7 +292,6 @@ Public Class Form1
             MsgBox("Connection error: " & ex.Message)
         End Try
     End Sub
-
     Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
         SerialPort1.Close()
         Timer1.Stop()
@@ -326,7 +329,7 @@ Public Class Form1
             previousLapTime = TimeSpan.Zero
             lapTimes.Clear()
             lbLaps.Items.Clear()
-            lblTime.Text = "00:00:00.000"
+            lblTime.Text = "00:00.000"
             btnReset.Text = "Lap"
         End If
     End Sub

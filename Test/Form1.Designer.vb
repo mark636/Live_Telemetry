@@ -23,12 +23,12 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.btnDisconnect = New System.Windows.Forms.Button()
@@ -36,14 +36,9 @@ Partial Class Form1
         Me.ButtonScanPort = New System.Windows.Forms.Button()
         Me.ButtonConnect = New System.Windows.Forms.Button()
         Me.Label5 = New System.Windows.Forms.Label()
-        Me.LbSenRPML = New System.Windows.Forms.Label()
-        Me.Panel1 = New System.Windows.Forms.Panel()
-        Me.btnSettings = New System.Windows.Forms.Button()
-        Me.lbENVSen = New System.Windows.Forms.Label()
-        Me.lbSenShaft = New System.Windows.Forms.Label()
-        Me.LbSenCrank = New System.Windows.Forms.Label()
-        Me.LbSenRPMC = New System.Windows.Forms.Label()
-        Me.LbSenRPMR = New System.Windows.Forms.Label()
+        Me.LbSenPH = New System.Windows.Forms.Label()
+        Me.LbSenRl = New System.Windows.Forms.Label()
+        Me.LbSenYW = New System.Windows.Forms.Label()
         Me.Panel2 = New System.Windows.Forms.Panel()
         Me.Label9 = New System.Windows.Forms.Label()
         Me.LbGear2 = New System.Windows.Forms.Label()
@@ -56,6 +51,7 @@ Partial Class Form1
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.Panel3 = New System.Windows.Forms.Panel()
+        Me.Label3 = New System.Windows.Forms.Label()
         Me.lbLaps = New System.Windows.Forms.ListBox()
         Me.btnReset = New System.Windows.Forms.Button()
         Me.btnStartStop = New System.Windows.Forms.Button()
@@ -80,7 +76,6 @@ Partial Class Form1
         Me.TextBox1 = New System.Windows.Forms.TextBox()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.Timer2 = New System.Windows.Forms.Timer(Me.components)
-        Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.Panel3.SuspendLayout()
         CType(Me.Chart2, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -157,119 +152,48 @@ Partial Class Form1
         Me.Label5.BackColor = System.Drawing.Color.Transparent
         Me.Label5.Font = New System.Drawing.Font("Nirmala UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label5.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.Label5.Location = New System.Drawing.Point(87, 32)
+        Me.Label5.Location = New System.Drawing.Point(1433, 678)
         Me.Label5.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(171, 28)
+        Me.Label5.Size = New System.Drawing.Size(194, 28)
         Me.Label5.TabIndex = 48
-        Me.Label5.Text = "SENSOR STATUS:"
+        Me.Label5.Text = "BIKE ORIENTATION"
         '
-        'LbSenRPML
+        'LbSenPH
         '
-        Me.LbSenRPML.AutoSize = True
-        Me.LbSenRPML.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbSenRPML.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.LbSenRPML.Location = New System.Drawing.Point(29, 164)
-        Me.LbSenRPML.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbSenRPML.Name = "LbSenRPML"
-        Me.LbSenRPML.Size = New System.Drawing.Size(86, 23)
-        Me.LbSenRPML.TabIndex = 56
-        Me.LbSenRPML.Text = "RPM_LEFT"
+        Me.LbSenPH.AutoSize = True
+        Me.LbSenPH.Font = New System.Drawing.Font("Nirmala UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LbSenPH.ForeColor = System.Drawing.SystemColors.ButtonFace
+        Me.LbSenPH.Location = New System.Drawing.Point(1481, 732)
+        Me.LbSenPH.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.LbSenPH.Name = "LbSenPH"
+        Me.LbSenPH.Size = New System.Drawing.Size(60, 28)
+        Me.LbSenPH.TabIndex = 56
+        Me.LbSenPH.Text = "Pitch"
         '
-        'Panel1
+        'LbSenRl
         '
-        Me.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(24, Byte), Integer), CType(CType(30, Byte), Integer), CType(CType(54, Byte), Integer))
-        Me.Panel1.Controls.Add(Me.btnSettings)
-        Me.Panel1.Controls.Add(Me.lbENVSen)
-        Me.Panel1.Controls.Add(Me.lbSenShaft)
-        Me.Panel1.Controls.Add(Me.LbSenCrank)
-        Me.Panel1.Controls.Add(Me.LbSenRPMC)
-        Me.Panel1.Controls.Add(Me.LbSenRPMR)
-        Me.Panel1.Controls.Add(Me.Label5)
-        Me.Panel1.Controls.Add(Me.LbSenRPML)
-        Me.Panel1.Dock = System.Windows.Forms.DockStyle.Right
-        Me.Panel1.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.Panel1.Location = New System.Drawing.Point(1611, 0)
-        Me.Panel1.Margin = New System.Windows.Forms.Padding(4)
-        Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(313, 953)
-        Me.Panel1.TabIndex = 58
+        Me.LbSenRl.AutoSize = True
+        Me.LbSenRl.Font = New System.Drawing.Font("Nirmala UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LbSenRl.ForeColor = System.Drawing.SystemColors.ButtonFace
+        Me.LbSenRl.Location = New System.Drawing.Point(1244, 732)
+        Me.LbSenRl.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.LbSenRl.Name = "LbSenRl"
+        Me.LbSenRl.Size = New System.Drawing.Size(48, 28)
+        Me.LbSenRl.TabIndex = 58
+        Me.LbSenRl.Text = "Roll"
         '
-        'btnSettings
+        'LbSenYW
         '
-        Me.btnSettings.BackColor = System.Drawing.Color.FromArgb(CType(CType(24, Byte), Integer), CType(CType(30, Byte), Integer), CType(CType(54, Byte), Integer))
-        Me.btnSettings.FlatAppearance.BorderSize = 0
-        Me.btnSettings.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(CType(CType(46, Byte), Integer), CType(CType(51, Byte), Integer), CType(CType(73, Byte), Integer))
-        Me.btnSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnSettings.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.btnSettings.ForeColor = System.Drawing.Color.Transparent
-        Me.btnSettings.Location = New System.Drawing.Point(69, 833)
-        Me.btnSettings.Margin = New System.Windows.Forms.Padding(4)
-        Me.btnSettings.Name = "btnSettings"
-        Me.btnSettings.Size = New System.Drawing.Size(165, 39)
-        Me.btnSettings.TabIndex = 65
-        Me.btnSettings.Text = "Settings"
-        Me.btnSettings.UseVisualStyleBackColor = False
-        '
-        'lbENVSen
-        '
-        Me.lbENVSen.AutoSize = True
-        Me.lbENVSen.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lbENVSen.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.lbENVSen.Location = New System.Drawing.Point(29, 438)
-        Me.lbENVSen.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.lbENVSen.Name = "lbENVSen"
-        Me.lbENVSen.Size = New System.Drawing.Size(216, 23)
-        Me.lbENVSen.TabIndex = 63
-        Me.lbENVSen.Text = "ENVIRONMENTAL SENSOR"
-        '
-        'lbSenShaft
-        '
-        Me.lbSenShaft.AutoSize = True
-        Me.lbSenShaft.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lbSenShaft.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.lbSenShaft.Location = New System.Drawing.Point(29, 361)
-        Me.lbSenShaft.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.lbSenShaft.Name = "lbSenShaft"
-        Me.lbSenShaft.Size = New System.Drawing.Size(101, 23)
-        Me.lbSenShaft.TabIndex = 60
-        Me.lbSenShaft.Text = "RPM_SHAFT"
-        '
-        'LbSenCrank
-        '
-        Me.LbSenCrank.AutoSize = True
-        Me.LbSenCrank.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbSenCrank.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.LbSenCrank.Location = New System.Drawing.Point(29, 290)
-        Me.LbSenCrank.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbSenCrank.Name = "LbSenCrank"
-        Me.LbSenCrank.Size = New System.Drawing.Size(107, 23)
-        Me.LbSenCrank.TabIndex = 59
-        Me.LbSenCrank.Text = "RPM_CRANK"
-        '
-        'LbSenRPMC
-        '
-        Me.LbSenRPMC.AutoSize = True
-        Me.LbSenRPMC.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbSenRPMC.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.LbSenRPMC.Location = New System.Drawing.Point(29, 100)
-        Me.LbSenRPMC.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbSenRPMC.Name = "LbSenRPMC"
-        Me.LbSenRPMC.Size = New System.Drawing.Size(113, 23)
-        Me.LbSenRPMC.TabIndex = 58
-        Me.LbSenRPMC.Text = "RPM_CENTRE"
-        '
-        'LbSenRPMR
-        '
-        Me.LbSenRPMR.AutoSize = True
-        Me.LbSenRPMR.Font = New System.Drawing.Font("Nirmala UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.LbSenRPMR.ForeColor = System.Drawing.SystemColors.ButtonFace
-        Me.LbSenRPMR.Location = New System.Drawing.Point(29, 225)
-        Me.LbSenRPMR.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.LbSenRPMR.Name = "LbSenRPMR"
-        Me.LbSenRPMR.Size = New System.Drawing.Size(100, 23)
-        Me.LbSenRPMR.TabIndex = 57
-        Me.LbSenRPMR.Text = "RPM_RIGHT"
+        Me.LbSenYW.AutoSize = True
+        Me.LbSenYW.Font = New System.Drawing.Font("Nirmala UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LbSenYW.ForeColor = System.Drawing.SystemColors.ButtonFace
+        Me.LbSenYW.Location = New System.Drawing.Point(1710, 732)
+        Me.LbSenYW.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.LbSenYW.Name = "LbSenYW"
+        Me.LbSenYW.Size = New System.Drawing.Size(49, 28)
+        Me.LbSenYW.TabIndex = 57
+        Me.LbSenYW.Text = "Yaw"
         '
         'Panel2
         '
@@ -291,7 +215,7 @@ Partial Class Form1
         Me.Panel2.Location = New System.Drawing.Point(0, 0)
         Me.Panel2.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(1611, 121)
+        Me.Panel2.Size = New System.Drawing.Size(1924, 121)
         Me.Panel2.TabIndex = 65
         '
         'Label9
@@ -300,7 +224,7 @@ Partial Class Form1
         Me.Label9.BackColor = System.Drawing.Color.Transparent
         Me.Label9.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label9.ForeColor = System.Drawing.Color.Transparent
-        Me.Label9.Location = New System.Drawing.Point(1215, 47)
+        Me.Label9.Location = New System.Drawing.Point(1589, 23)
         Me.Label9.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(165, 35)
@@ -313,7 +237,7 @@ Partial Class Form1
         Me.LbGear2.BackColor = System.Drawing.Color.Transparent
         Me.LbGear2.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbGear2.ForeColor = System.Drawing.Color.Transparent
-        Me.LbGear2.Location = New System.Drawing.Point(536, 16)
+        Me.LbGear2.Location = New System.Drawing.Point(533, 23)
         Me.LbGear2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbGear2.Name = "LbGear2"
         Me.LbGear2.Size = New System.Drawing.Size(29, 35)
@@ -326,7 +250,7 @@ Partial Class Form1
         Me.LbAnalog.BackColor = System.Drawing.Color.Transparent
         Me.LbAnalog.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbAnalog.ForeColor = System.Drawing.Color.Transparent
-        Me.LbAnalog.Location = New System.Drawing.Point(1073, 66)
+        Me.LbAnalog.Location = New System.Drawing.Point(1447, 23)
         Me.LbAnalog.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbAnalog.Name = "LbAnalog"
         Me.LbAnalog.Size = New System.Drawing.Size(29, 35)
@@ -339,7 +263,7 @@ Partial Class Form1
         Me.Lab.BackColor = System.Drawing.Color.Transparent
         Me.Lab.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Lab.ForeColor = System.Drawing.Color.Transparent
-        Me.Lab.Location = New System.Drawing.Point(872, 66)
+        Me.Lab.Location = New System.Drawing.Point(1247, 23)
         Me.Lab.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Lab.Name = "Lab"
         Me.Lab.Size = New System.Drawing.Size(192, 35)
@@ -352,7 +276,7 @@ Partial Class Form1
         Me.LbBatteryPi.BackColor = System.Drawing.Color.Transparent
         Me.LbBatteryPi.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbBatteryPi.ForeColor = System.Drawing.Color.Transparent
-        Me.LbBatteryPi.Location = New System.Drawing.Point(1009, 18)
+        Me.LbBatteryPi.Location = New System.Drawing.Point(1146, 23)
         Me.LbBatteryPi.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbBatteryPi.Name = "LbBatteryPi"
         Me.LbBatteryPi.Size = New System.Drawing.Size(29, 35)
@@ -365,7 +289,7 @@ Partial Class Form1
         Me.Label10.BackColor = System.Drawing.Color.Transparent
         Me.Label10.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label10.ForeColor = System.Drawing.Color.Transparent
-        Me.Label10.Location = New System.Drawing.Point(872, 18)
+        Me.Label10.Location = New System.Drawing.Point(990, 23)
         Me.Label10.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(132, 35)
@@ -376,7 +300,7 @@ Partial Class Form1
         '
         Me.LbBatG.AutoSize = True
         Me.LbBatG.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold)
-        Me.LbBatG.Location = New System.Drawing.Point(1387, 47)
+        Me.LbBatG.Location = New System.Drawing.Point(1762, 23)
         Me.LbBatG.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbBatG.Name = "LbBatG"
         Me.LbBatG.Size = New System.Drawing.Size(29, 35)
@@ -389,7 +313,7 @@ Partial Class Form1
         Me.Lbmax.BackColor = System.Drawing.Color.Transparent
         Me.Lbmax.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Lbmax.ForeColor = System.Drawing.Color.Transparent
-        Me.Lbmax.Location = New System.Drawing.Point(536, 66)
+        Me.Lbmax.Location = New System.Drawing.Point(781, 23)
         Me.Lbmax.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Lbmax.Name = "Lbmax"
         Me.Lbmax.Size = New System.Drawing.Size(29, 35)
@@ -402,7 +326,7 @@ Partial Class Form1
         Me.Label2.BackColor = System.Drawing.Color.Transparent
         Me.Label2.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.ForeColor = System.Drawing.Color.Transparent
-        Me.Label2.Location = New System.Drawing.Point(449, 18)
+        Me.Label2.Location = New System.Drawing.Point(438, 23)
         Me.Label2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(87, 35)
@@ -415,7 +339,7 @@ Partial Class Form1
         Me.Label1.BackColor = System.Drawing.Color.Transparent
         Me.Label1.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.ForeColor = System.Drawing.Color.Transparent
-        Me.Label1.Location = New System.Drawing.Point(369, 66)
+        Me.Label1.Location = New System.Drawing.Point(593, 23)
         Me.Label1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(160, 35)
@@ -424,7 +348,12 @@ Partial Class Form1
         '
         'Panel3
         '
+        Me.Panel3.Controls.Add(Me.Label3)
+        Me.Panel3.Controls.Add(Me.LbSenYW)
+        Me.Panel3.Controls.Add(Me.LbSenPH)
+        Me.Panel3.Controls.Add(Me.LbSenRl)
         Me.Panel3.Controls.Add(Me.lbLaps)
+        Me.Panel3.Controls.Add(Me.Label5)
         Me.Panel3.Controls.Add(Me.btnReset)
         Me.Panel3.Controls.Add(Me.btnStartStop)
         Me.Panel3.Controls.Add(Me.lblTime)
@@ -446,8 +375,21 @@ Partial Class Form1
         Me.Panel3.Location = New System.Drawing.Point(0, 121)
         Me.Panel3.Margin = New System.Windows.Forms.Padding(4)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Size = New System.Drawing.Size(1611, 832)
+        Me.Panel3.Size = New System.Drawing.Size(1924, 832)
         Me.Panel3.TabIndex = 66
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.BackColor = System.Drawing.Color.Transparent
+        Me.Label3.Font = New System.Drawing.Font("Nirmala UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.ForeColor = System.Drawing.SystemColors.ButtonFace
+        Me.Label3.Location = New System.Drawing.Point(250, 678)
+        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(131, 28)
+        Me.Label3.TabIndex = 87
+        Me.Label3.Text = "STOPWATCH"
         '
         'lbLaps
         '
@@ -498,9 +440,9 @@ Partial Class Form1
         Me.lblTime.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold)
         Me.lblTime.Location = New System.Drawing.Point(33, 721)
         Me.lblTime.Name = "lblTime"
-        Me.lblTime.Size = New System.Drawing.Size(92, 35)
+        Me.lblTime.Size = New System.Drawing.Size(127, 35)
         Me.lblTime.TabIndex = 83
-        Me.lblTime.Text = "Label3"
+        Me.lblTime.Text = "00.00.000"
         '
         'LbCranks
         '
@@ -508,7 +450,7 @@ Partial Class Form1
         Me.LbCranks.BackColor = System.Drawing.Color.Transparent
         Me.LbCranks.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbCranks.ForeColor = System.Drawing.Color.Transparent
-        Me.LbCranks.Location = New System.Drawing.Point(764, 43)
+        Me.LbCranks.Location = New System.Drawing.Point(931, 31)
         Me.LbCranks.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbCranks.Name = "LbCranks"
         Me.LbCranks.Size = New System.Drawing.Size(29, 35)
@@ -521,7 +463,7 @@ Partial Class Form1
         Me.Label13.BackColor = System.Drawing.Color.Transparent
         Me.Label13.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label13.ForeColor = System.Drawing.Color.Transparent
-        Me.Label13.Location = New System.Drawing.Point(648, 43)
+        Me.Label13.Location = New System.Drawing.Point(812, 31)
         Me.Label13.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(121, 35)
@@ -534,7 +476,7 @@ Partial Class Form1
         Me.LbSpeed2.BackColor = System.Drawing.Color.Transparent
         Me.LbSpeed2.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbSpeed2.ForeColor = System.Drawing.Color.Transparent
-        Me.LbSpeed2.Location = New System.Drawing.Point(396, 43)
+        Me.LbSpeed2.Location = New System.Drawing.Point(414, 31)
         Me.LbSpeed2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbSpeed2.Name = "LbSpeed2"
         Me.LbSpeed2.Size = New System.Drawing.Size(29, 35)
@@ -547,7 +489,7 @@ Partial Class Form1
         Me.LbSpeed.BackColor = System.Drawing.Color.Transparent
         Me.LbSpeed.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbSpeed.ForeColor = System.Drawing.Color.Transparent
-        Me.LbSpeed.Location = New System.Drawing.Point(301, 43)
+        Me.LbSpeed.Location = New System.Drawing.Point(311, 31)
         Me.LbSpeed.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbSpeed.Name = "LbSpeed"
         Me.LbSpeed.Size = New System.Drawing.Size(95, 35)
@@ -560,7 +502,7 @@ Partial Class Form1
         Me.LbPower.BackColor = System.Drawing.Color.Transparent
         Me.LbPower.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.LbPower.ForeColor = System.Drawing.Color.Transparent
-        Me.LbPower.Location = New System.Drawing.Point(1197, 43)
+        Me.LbPower.Location = New System.Drawing.Point(1387, 31)
         Me.LbPower.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.LbPower.Name = "LbPower"
         Me.LbPower.Size = New System.Drawing.Size(29, 35)
@@ -573,7 +515,7 @@ Partial Class Form1
         Me.Label11.BackColor = System.Drawing.Color.Transparent
         Me.Label11.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label11.ForeColor = System.Drawing.Color.Transparent
-        Me.Label11.Location = New System.Drawing.Point(1080, 43)
+        Me.Label11.Location = New System.Drawing.Point(1270, 31)
         Me.Label11.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(110, 35)
@@ -582,19 +524,19 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea3.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea3)
-        Legend3.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend3)
-        Me.Chart2.Location = New System.Drawing.Point(771, 92)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend1)
+        Me.Chart2.Location = New System.Drawing.Point(937, 70)
         Me.Chart2.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart2.Name = "Chart2"
-        Series3.ChartArea = "ChartArea1"
-        Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
-        Series3.Legend = "Legend1"
-        Series3.Name = "Series1"
-        Me.Chart2.Series.Add(Series3)
-        Me.Chart2.Size = New System.Drawing.Size(735, 418)
+        Series1.ChartArea = "ChartArea1"
+        Series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart2.Series.Add(Series1)
+        Me.Chart2.Size = New System.Drawing.Size(822, 440)
         Me.Chart2.TabIndex = 67
         Me.Chart2.Text = "Chart2"
         '
@@ -604,7 +546,7 @@ Partial Class Form1
         Me.GroupBox5.Controls.Add(Me.LbChain)
         Me.GroupBox5.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox5.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox5.Location = New System.Drawing.Point(1239, 542)
+        Me.GroupBox5.Location = New System.Drawing.Point(1492, 542)
         Me.GroupBox5.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox5.Name = "GroupBox5"
         Me.GroupBox5.Padding = New System.Windows.Forms.Padding(4)
@@ -631,7 +573,7 @@ Partial Class Form1
         Me.GroupBox4.Controls.Add(Me.Label8)
         Me.GroupBox4.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox4.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox4.Location = New System.Drawing.Point(931, 542)
+        Me.GroupBox4.Location = New System.Drawing.Point(1113, 542)
         Me.GroupBox4.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Padding = New System.Windows.Forms.Padding(4)
@@ -658,7 +600,7 @@ Partial Class Form1
         Me.GroupBox3.Controls.Add(Me.Label7)
         Me.GroupBox3.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox3.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox3.Location = New System.Drawing.Point(632, 542)
+        Me.GroupBox3.Location = New System.Drawing.Point(728, 542)
         Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4)
@@ -685,7 +627,7 @@ Partial Class Form1
         Me.GroupBox2.Controls.Add(Me.Label6)
         Me.GroupBox2.Font = New System.Drawing.Font("Nirmala UI", 15.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox2.Location = New System.Drawing.Point(336, 542)
+        Me.GroupBox2.Location = New System.Drawing.Point(375, 542)
         Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4)
@@ -735,7 +677,7 @@ Partial Class Form1
         '
         'TextBox1
         '
-        Me.TextBox1.Location = New System.Drawing.Point(839, 238)
+        Me.TextBox1.Location = New System.Drawing.Point(1034, 238)
         Me.TextBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.Size = New System.Drawing.Size(609, 22)
@@ -743,21 +685,24 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea4.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea4)
-        Legend4.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend4)
-        Me.Chart1.Location = New System.Drawing.Point(28, 92)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
+        Me.Chart1.Location = New System.Drawing.Point(28, 70)
         Me.Chart1.Margin = New System.Windows.Forms.Padding(4)
         Me.Chart1.Name = "Chart1"
-        Series4.ChartArea = "ChartArea1"
-        Series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
-        Series4.Legend = "Legend1"
-        Series4.Name = "Series1"
-        Me.Chart1.Series.Add(Series4)
-        Me.Chart1.Size = New System.Drawing.Size(735, 418)
+        Series2.ChartArea = "ChartArea1"
+        Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
+        Me.Chart1.Size = New System.Drawing.Size(800, 440)
         Me.Chart1.TabIndex = 59
         Me.Chart1.Text = "Chart1"
+        '
+        'Timer2
+        '
         '
         'Form1
         '
@@ -768,15 +713,12 @@ Partial Class Form1
         Me.ClientSize = New System.Drawing.Size(1924, 953)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel2)
-        Me.Controls.Add(Me.Panel1)
         Me.ForeColor = System.Drawing.SystemColors.ButtonFace
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(4)
         Me.Name = "Form1"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "MQ SPEED TELEMETRY"
-        Me.Panel1.ResumeLayout(False)
-        Me.Panel1.PerformLayout()
         Me.Panel2.ResumeLayout(False)
         Me.Panel2.PerformLayout()
         Me.Panel3.ResumeLayout(False)
@@ -802,13 +744,9 @@ Partial Class Form1
     Friend WithEvents ButtonScanPort As Button
     Friend WithEvents ButtonConnect As Button
     Friend WithEvents Label5 As Label
-    Friend WithEvents LbSenRPML As Label
-    Friend WithEvents Panel1 As Panel
-    Friend WithEvents LbSenRPMC As Label
-    Friend WithEvents LbSenRPMR As Label
-    Friend WithEvents lbENVSen As Label
-    Friend WithEvents lbSenShaft As Label
-    Friend WithEvents LbSenCrank As Label
+    Friend WithEvents LbSenPH As Label
+    Friend WithEvents LbSenRl As Label
+    Friend WithEvents LbSenYW As Label
     Friend WithEvents Panel2 As Panel
     Friend WithEvents Panel3 As Panel
     Friend WithEvents Chart2 As DataVisualization.Charting.Chart
@@ -840,10 +778,10 @@ Partial Class Form1
     Friend WithEvents Label9 As Label
     Friend WithEvents LbCranks As Label
     Friend WithEvents Label13 As Label
-    Friend WithEvents btnSettings As Button
     Friend WithEvents lbLaps As ListBox
     Friend WithEvents btnReset As Button
     Friend WithEvents btnStartStop As Button
     Friend WithEvents lblTime As Label
     Friend WithEvents Timer2 As Timer
+    Friend WithEvents Label3 As Label
 End Class
