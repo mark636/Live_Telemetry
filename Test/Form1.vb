@@ -198,9 +198,9 @@ Public Class Form1
             End If
         End If
 
-        '------ Rear gear ratio ----'
-        Dim expectedrgratio = 1.4375 'Intermediate drive teeth/ freewheel 
-        If actualChainRatio < (expectedrgratio - toleranceG) Or actualGearRatio > (expectedrgratio + toleranceG) Then
+        '------ Rear chain ratio ----'
+        Dim expectedrgratio = 1.4375 'Intermediate drive teeth/freewheel 
+        If actualChainRatio < (expectedrgratio - toleranceG) Or actualChainRatio > (expectedrgratio + toleranceG) Then
             LbChain.Invoke(Sub()
                                LbChain.Text = $"Rear RATIO: {actualChainRatio:F2}"
                                GroupBox5.BackColor = Color.Red
@@ -219,9 +219,18 @@ Public Class Form1
     End Sub
 
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
+        ' Calculate gear ratio (Chainring RPM / Sprocket RPM)
         If RPM_CR > 0 Then
             actualGearRatio = RPM_S / RPM_CR
+        Else
+            actualGearRatio = 0
+        End If
+
+        ' Calculate chain ratio (Sprocket RPM / Wheel RPM)
+        If RPM_C > 0 Then
             actualChainRatio = RPM_S / RPM_C
+        Else
+            actualChainRatio = 0
         End If
     End Sub
 
