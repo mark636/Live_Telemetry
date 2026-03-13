@@ -1,15 +1,24 @@
-﻿' Refactored VB.NET Telemetry Dashboard
-Imports System.IO.Ports
+﻿Imports System.IO.Ports
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Text
 Imports System.Collections.Concurrent
 Imports System.Diagnostics
+Imports System.IO
+Imports ClosedXML.Excel
 Public Class Form1
     ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
     Dim WithEvents Timer1 As New Timer
     Dim dataQueue As New ConcurrentQueue(Of String)
     Dim partialLine As String = ""
+
+    ' --- Excel Logging for Stopwatch/Laps --- '
+    Private logWriter As StreamWriter = Nothing
+    Private logFilePath As String = ""
+    Private lapCounter As Integer = 0
+
+    Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "template.xlsx")
+    Private excelFilePath As String = ""
 
     '-----StopWatch--------------'
     Private sw As New Stopwatch()
@@ -54,6 +63,8 @@ Public Class Form1
 
         ' Enable KeyPreview so the form receives key events before controls
         Me.KeyPreview = True
+
+        MessageBox.Show("Application.StartupPath = " & Application.StartupPath, "StartupPath")
     End Sub
 
     Private Sub InitializeChart(chart As Chart, title As String, seriesNames() As String)
@@ -313,6 +324,29 @@ Public Class Form1
             btnStartStop.Text = "Start"
             btnReset.Text = "Reset"
         Else
+            lapCounter = 0
+            previousLapTime = TimeSpan.Zero
+
+            Dim fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
+            Dim logFolder = Path.Combine(Application.StartupPath, "Log_Files")
+            If Not Directory.Exists(logFolder) Then Directory.CreateDirectory(logFolder)
+            excelFilePath = Path.Combine(logFolder, fileName)
+
+            If File.Exists(excelTemplatePath) Then
+                File.Copy(excelTemplatePath, excelFilePath, overwrite:=True)
+            Else
+                Using wb As New XLWorkbook()
+                    Dim ws = wb.Worksheets.Add("Sheet1")
+                    ws.Cell(1, 1).Value = "Lap Number"
+                    ws.Cell(1, 2).Value = "Lap Time Total"
+                    ws.Cell(1, 3).Value = "Global Start Time"
+                    ws.Cell(1, 4).Value = "Global End Time"
+                    ws.Cell(1, 5).Value = "Real-Time"
+                    ws.Range("A1:E1").CreateTable("LapTimes")
+                    wb.SaveAs(excelFilePath)
+                End Using
+            End If
+
             sw.Start()
             Timer2.Enabled = True
             btnStartStop.Text = "Stop"
@@ -325,8 +359,46 @@ Public Class Form1
             Dim currentLapTime As TimeSpan = sw.Elapsed
             Dim lapInterval As TimeSpan = currentLapTime.Subtract(previousLapTime)
 
+            lapCounter += 1
+
+            Try
+                Using wb As New XLWorkbook(excelFilePath)
+                    Dim ws = wb.Worksheet(1)
+                    Dim tbl As IXLTable = Nothing
+                    If ws.Tables.Any(Function(t) t.Name = "LapTimes") Then
+                        tbl = ws.Table("LapTimes")
+                    ElseIf ws.Tables.Any() Then
+                        tbl = ws.Tables.First()
+                    Else
+                        If ws.Cell(1, 1).IsEmpty() Then
+                            ws.Cell(1, 1).Value = "Lap Number"
+                            ws.Cell(1, 2).Value = "Lap Time Total"
+                            ws.Cell(1, 3).Value = "Global Start Time"
+                            ws.Cell(1, 4).Value = "Global End Time"
+                            ws.Cell(1, 5).Value = "Real-Time"
+                        End If
+                        tbl = ws.Range("A1:E1").CreateTable("LapTimes")
+                    End If
+
+                    tbl.InsertRowsBelow(1)
+                    Dim lastRangeRow = tbl.DataRange.LastRow()
+                    Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
+                    Dim newRow As IXLRow = ws.Row(rowNumber)
+
+                    newRow.Cell(1).Value = lapCounter
+                    newRow.Cell(2).Value = lapInterval.ToString("hh\:mm\:ss\.fff")
+                    newRow.Cell(3).Value = previousLapTime.ToString("hh\:mm\:ss\.fff")
+                    newRow.Cell(4).Value = currentLapTime.ToString("hh\:mm\:ss\.fff")
+                    newRow.Cell(5).Value = DateTime.Now.ToString("HH:mm:ss.fff")
+                    wb.Save()
+
+                End Using
+            Catch ex As Exception
+                MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+
             ' Format the lap time string
-            Dim lapText As String = $"Lap {lapTimes.Count + 1}: {lapInterval.ToString("hh\:mm\:ss\.fff")}"
+            Dim lapText As String = $"Lap {lapCounter}: {lapInterval.ToString("hh\:mm\:ss\.fff")}"
 
             ' Add to ListBox and list
             lbLaps.Items.Insert(0, lapText)
@@ -340,6 +412,8 @@ Public Class Form1
             lbLaps.Items.Clear()
             lblTime.Text = "00:00.000"
             btnReset.Text = "Lap"
+
+
         End If
     End Sub
 
@@ -382,4 +456,9 @@ Public Class Form1
             btnLapReset_Click(sender, e)
         End If
     End Sub
+
+
+
+
+
 End Class
