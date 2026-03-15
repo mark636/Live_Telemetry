@@ -12,13 +12,11 @@ Public Class Form1
     Dim dataQueue As New ConcurrentQueue(Of String)
     Dim partialLine As String = ""
 
-    ' --- Excel Logging for Stopwatch/Laps --- '
-    Private logWriter As StreamWriter = Nothing
-    Private logFilePath As String = ""
+    ' --- Excel Logging for Stopwatch/Laps --- 
     Private lapCounter As Integer = 0
-
     Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "template.xlsx")
     Private excelFilePath As String = ""
+    Private openWorkbook As XLWorkbook = Nothing
 
     '-----StopWatch--------------'
     Private sw As New Stopwatch()
@@ -64,7 +62,7 @@ Public Class Form1
         ' Enable KeyPreview so the form receives key events before controls
         Me.KeyPreview = True
 
-        MessageBox.Show("Application.StartupPath = " & Application.StartupPath, "StartupPath")
+
     End Sub
 
     Private Sub InitializeChart(chart As Chart, title As String, seriesNames() As String)
@@ -234,12 +232,12 @@ Public Class Form1
         If RPM_CR > 0 Then
             actualGearRatio = RPM_S / RPM_CR
         Else
-            actualGearRatio = 0
+            actualGearRatio = 0S
         End If
 
-        ' Calculate chain ratio (Sprocket RPM / Wheel RPM)
-        If RPM_C > 0 Then
-            actualChainRatio = RPM_S / RPM_C
+        ' Calculate chain ratio (Wheel RPM / Shaft RPM)
+        If RPM_S > 0 Then
+            actualChainRatio = RPM_C / RPM_S
         Else
             actualChainRatio = 0
         End If
@@ -319,6 +317,16 @@ Public Class Form1
 
     Private Sub btnStartStop_click(sender As Object, e As EventArgs) Handles btnStartStop.Click
         If sw.IsRunning Then
+            If openWorkbook IsNot Nothing Then
+                Try
+                    openWorkbook.Save()
+                Catch ex As Exception
+                Finally
+                    openWorkbook.Dispose()
+                    openWorkbook = Nothing
+                End Try
+            End If
+
             sw.Stop()
             Timer2.Enabled = False
             btnStartStop.Text = "Start"
@@ -347,6 +355,17 @@ Public Class Form1
                 End Using
             End If
 
+            If openWorkbook IsNot Nothing Then
+                Try
+                    openWorkbook.Dispose()
+                Catch ex As Exception
+                Finally
+                    openWorkbook = Nothing
+                End Try
+            End If
+
+            openWorkbook = New XLWorkbook(excelFilePath)
+
             sw.Start()
             Timer2.Enabled = True
             btnStartStop.Text = "Stop"
@@ -362,37 +381,43 @@ Public Class Form1
             lapCounter += 1
 
             Try
-                Using wb As New XLWorkbook(excelFilePath)
-                    Dim ws = wb.Worksheet(1)
-                    Dim tbl As IXLTable = Nothing
-                    If ws.Tables.Any(Function(t) t.Name = "LapTimes") Then
-                        tbl = ws.Table("LapTimes")
-                    ElseIf ws.Tables.Any() Then
-                        tbl = ws.Tables.First()
-                    Else
-                        If ws.Cell(1, 1).IsEmpty() Then
-                            ws.Cell(1, 1).Value = "Lap Number"
-                            ws.Cell(1, 2).Value = "Lap Time Total"
-                            ws.Cell(1, 3).Value = "Global Start Time"
-                            ws.Cell(1, 4).Value = "Global End Time"
-                            ws.Cell(1, 5).Value = "Real-Time"
-                        End If
-                        tbl = ws.Range("A1:E1").CreateTable("LapTimes")
+                If openWorkbook Is Nothing Then
+                    ' Fallback: open the file if not already open
+                    openWorkbook = New XLWorkbook(excelFilePath)
+                End If
+
+                Dim ws = openWorkbook.Worksheet(1)
+
+                ' Find or create the table
+                Dim tbl As IXLTable = Nothing
+                If ws.Tables.Any(Function(t) t.Name = "LapTimes") Then
+                    tbl = ws.Table("LapTimes")
+                ElseIf ws.Tables.Any() Then
+                    tbl = ws.Tables.First()
+                Else
+                    If ws.Cell(1, 1).IsEmpty() Then
+                        ws.Cell(1, 1).Value = "Lap Number"
+                        ws.Cell(1, 2).Value = "Lap Time Total"
+                        ws.Cell(1, 3).Value = "Global Start Time"
+                        ws.Cell(1, 4).Value = "Global End Time"
+                        ws.Cell(1, 5).Value = "Real-Time"
                     End If
+                    tbl = ws.Range("A1:E1").CreateTable("LapTimes")
+                End If
 
-                    tbl.InsertRowsBelow(1)
-                    Dim lastRangeRow = tbl.DataRange.LastRow()
-                    Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
-                    Dim newRow As IXLRow = ws.Row(rowNumber)
+                ' Insert a row in the table and write values (in-memory)
+                tbl.InsertRowsBelow(1)
+                Dim lastRangeRow = tbl.DataRange.LastRow()
+                Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
+                Dim newRow As IXLRow = ws.Row(rowNumber)
 
-                    newRow.Cell(1).Value = lapCounter
-                    newRow.Cell(2).Value = lapInterval.ToString("hh\:mm\:ss\.fff")
-                    newRow.Cell(3).Value = previousLapTime.ToString("hh\:mm\:ss\.fff")
-                    newRow.Cell(4).Value = currentLapTime.ToString("hh\:mm\:ss\.fff")
-                    newRow.Cell(5).Value = DateTime.Now.ToString("HH:mm:ss.fff")
-                    wb.Save()
+                newRow.Cell(1).Value = lapCounter
+                newRow.Cell(2).Value = lapInterval.ToString("hh\:mm\:ss\.fff")
+                newRow.Cell(3).Value = previousLapTime.ToString("hh\:mm\:ss\.fff")
+                newRow.Cell(4).Value = currentLapTime.ToString("hh\:mm\:ss\.fff")
+                newRow.Cell(5).Value = DateTime.Now.ToString("HH:mm:ss.fff")
 
-                End Using
+                ' Do NOT call Save() here to avoid blocking — workbook is saved on Stop
             Catch ex As Exception
                 MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
