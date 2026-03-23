@@ -14,7 +14,7 @@ Public Class Form1
 
     ' --- Excel Logging for Stopwatch/Laps --- 
     Private lapCounter As Integer = 0
-    Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "lap_template.xlsx")
+    Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "data_template.xlsx")
     Private excelFilePath As String = ""
     Private openWorkbook As XLWorkbook = Nothing
 
@@ -225,7 +225,72 @@ Public Class Form1
         If Total_Speed > maxspeed Then maxspeed = Total_Speed
         Lbmax.Invoke(Sub() Lbmax.Text = $"{maxspeed} KPH")
         LbSpeed2.Invoke(Sub() LbSpeed2.Text = $"{Total_Speed} KPH")
+
+        'Update Log
+
+        Try
+            If openWorkbook Is Nothing Then
+                ' Fallback: open the file if not already open
+                openWorkbook = New XLWorkbook(excelFilePath)
+            End If
+
+            Dim ws = openWorkbook.Worksheet(1)
+
+            ' Find or create the table
+            Dim tbl As IXLTable = Nothing
+            If ws.Tables.Any(Function(t) t.Name = "DataLog") Then
+                tbl = ws.Table("DataLog")
+            ElseIf ws.Tables.Any() Then
+                tbl = ws.Tables.First()
+            Else
+                If ws.Cell(1, 1).IsEmpty() Then
+                    ws.Cell(1, 1).Value = "Time"
+                    ws.Cell(1, 2).Value = "RPM_CR"
+                    ws.Cell(1, 3).Value = "RPM_C"
+                    ws.Cell(1, 4).Value = "RPM_S"
+                    ws.Cell(1, 5).Value = "Total_Speed"
+                    ws.Cell(1, 6).Value = "Distance"
+                    ws.Cell(1, 7).Value = "Power"
+                    ws.Cell(1, 8).Value = "Gear"
+                    ws.Cell(1, 9).Value = "BatG"
+                    ws.Cell(1, 10).Value = "BatPi"
+                    ws.Cell(1, 11).Value = "BatAna"
+                    ws.Cell(1, 12).Value = "rl"
+                    ws.Cell(1, 13).Value = "ph"
+                    ws.Cell(1, 14).Value = "yw"
+
+                End If
+                tbl = ws.Range("A1:N1").CreateTable("DataLog")
+            End If
+
+            ' Insert a row in the table and write values (in-memory)
+            tbl.InsertRowsBelow(1)
+            Dim lastRangeRow = tbl.DataRange.LastRow()
+            Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
+            Dim newRow As IXLRow = ws.Row(rowNumber)
+
+            newRow.Cell(1).Value = DateTime.Now.ToString("HH:mm:ss.fff")
+            newRow.Cell(1).Value = RPM_CR
+            newRow.Cell(2).Value = RPM_C
+            newRow.Cell(3).Value = RPM_S
+            newRow.Cell(4).Value = Total_Speed
+            newRow.Cell(5).Value = Distance
+            newRow.Cell(6).Value = POWER
+            newRow.Cell(7).Value = Gear
+            newRow.Cell(8).Value = BatG
+            newRow.Cell(9).Value = BatPi
+            newRow.Cell(10).Value = BatAna
+            newRow.Cell(11).Value = rl
+            newRow.Cell(12).Value = ph
+            newRow.Cell(13).Value = yw
+
+            ' Do NOT call Save() here to avoid blocking — workbook is saved on Stop
+        Catch ex As Exception
+            MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
+
+
 
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
         ' Calculate gear ratio (Chainring RPM / Sprocket RPM)
@@ -335,7 +400,8 @@ Public Class Form1
             lapCounter = 0
             previousLapTime = TimeSpan.Zero
 
-            Dim fileName = "lap_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
+            'Dim fileName = "lap_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
+            Dim fileName = "data_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
             Dim logFolder = Path.Combine(Application.StartupPath, "Log_Files")
             If Not Directory.Exists(logFolder) Then Directory.CreateDirectory(logFolder)
             excelFilePath = Path.Combine(logFolder, fileName)
@@ -343,16 +409,36 @@ Public Class Form1
             If File.Exists(excelTemplatePath) Then
                 File.Copy(excelTemplatePath, excelFilePath, overwrite:=True)
             Else
+                'Using wb As New XLWorkbook()
+                '    Dim ws = wb.Worksheets.Add("Sheet1")
+                '    ws.Cell(1, 1).Value = "Lap Number"
+                '    ws.Cell(1, 2).Value = "Lap Time Total"
+                '    ws.Cell(1, 3).Value = "Global Start Time"
+                '    ws.Cell(1, 4).Value = "Global End Time"
+                '    ws.Cell(1, 5).Value = "Real-Time"
+                '    ws.Range("A1:E1").CreateTable("LapTimes")
+                '    wb.SaveAs(excelFilePath)
+                'End Using
                 Using wb As New XLWorkbook()
                     Dim ws = wb.Worksheets.Add("Sheet1")
-                    ws.Cell(1, 1).Value = "Lap Number"
-                    ws.Cell(1, 2).Value = "Lap Time Total"
-                    ws.Cell(1, 3).Value = "Global Start Time"
-                    ws.Cell(1, 4).Value = "Global End Time"
-                    ws.Cell(1, 5).Value = "Real-Time"
-                    ws.Range("A1:E1").CreateTable("LapTimes")
+                    ws.Cell(1, 1).Value = "Time"
+                    ws.Cell(1, 2).Value = "RPM_CR"
+                    ws.Cell(1, 3).Value = "RPM_C"
+                    ws.Cell(1, 4).Value = "RPM_S"
+                    ws.Cell(1, 5).Value = "Total_Speed"
+                    ws.Cell(1, 6).Value = "Distance"
+                    ws.Cell(1, 7).Value = "Power"
+                    ws.Cell(1, 8).Value = "Gear"
+                    ws.Cell(1, 9).Value = "BatG"
+                    ws.Cell(1, 10).Value = "BatPi"
+                    ws.Cell(1, 11).Value = "BatAna"
+                    ws.Cell(1, 12).Value = "rl"
+                    ws.Cell(1, 13).Value = "ph"
+                    ws.Cell(1, 14).Value = "yw"
+                    ws.Range("A1:N1").CreateTable("DataLog")
                     wb.SaveAs(excelFilePath)
                 End Using
+
             End If
 
             If openWorkbook IsNot Nothing Then
@@ -380,47 +466,47 @@ Public Class Form1
 
             lapCounter += 1
 
-            Try
-                If openWorkbook Is Nothing Then
-                    ' Fallback: open the file if not already open
-                    openWorkbook = New XLWorkbook(excelFilePath)
-                End If
+            'Try
+            '    If openWorkbook Is Nothing Then
+            '        ' Fallback: open the file if not already open
+            '        openWorkbook = New XLWorkbook(excelFilePath)
+            '    End If
 
-                Dim ws = openWorkbook.Worksheet(1)
+            '    Dim ws = openWorkbook.Worksheet(1)
 
-                ' Find or create the table
-                Dim tbl As IXLTable = Nothing
-                If ws.Tables.Any(Function(t) t.Name = "LapTimes") Then
-                    tbl = ws.Table("LapTimes")
-                ElseIf ws.Tables.Any() Then
-                    tbl = ws.Tables.First()
-                Else
-                    If ws.Cell(1, 1).IsEmpty() Then
-                        ws.Cell(1, 1).Value = "Lap Number"
-                        ws.Cell(1, 2).Value = "Lap Time Total"
-                        ws.Cell(1, 3).Value = "Global Start Time"
-                        ws.Cell(1, 4).Value = "Global End Time"
-                        ws.Cell(1, 5).Value = "Real-Time"
-                    End If
-                    tbl = ws.Range("A1:E1").CreateTable("LapTimes")
-                End If
+            '    ' Find or create the table
+            '    Dim tbl As IXLTable = Nothing
+            '    If ws.Tables.Any(Function(t) t.Name = "LapTimes") Then
+            '        tbl = ws.Table("LapTimes")
+            '    ElseIf ws.Tables.Any() Then
+            '        tbl = ws.Tables.First()
+            '    Else
+            '        If ws.Cell(1, 1).IsEmpty() Then
+            '            ws.Cell(1, 1).Value = "Lap Number"
+            '            ws.Cell(1, 2).Value = "Lap Time Total"
+            '            ws.Cell(1, 3).Value = "Global Start Time"
+            '            ws.Cell(1, 4).Value = "Global End Time"
+            '            ws.Cell(1, 5).Value = "Real-Time"
+            '        End If
+            '        tbl = ws.Range("A1:E1").CreateTable("LapTimes")
+            '    End If
 
-                ' Insert a row in the table and write values (in-memory)
-                tbl.InsertRowsBelow(1)
-                Dim lastRangeRow = tbl.DataRange.LastRow()
-                Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
-                Dim newRow As IXLRow = ws.Row(rowNumber)
+            '    ' Insert a row in the table and write values (in-memory)
+            '    tbl.InsertRowsBelow(1)
+            '    Dim lastRangeRow = tbl.DataRange.LastRow()
+            '    Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
+            '    Dim newRow As IXLRow = ws.Row(rowNumber)
 
-                newRow.Cell(1).Value = lapCounter
-                newRow.Cell(2).Value = lapInterval.ToString("hh\:mm\:ss\.fff")
-                newRow.Cell(3).Value = previousLapTime.ToString("hh\:mm\:ss\.fff")
-                newRow.Cell(4).Value = currentLapTime.ToString("hh\:mm\:ss\.fff")
-                newRow.Cell(5).Value = DateTime.Now.ToString("HH:mm:ss.fff")
+            '    newRow.Cell(1).Value = lapCounter
+            '    newRow.Cell(2).Value = lapInterval.ToString("hh\:mm\:ss\.fff")
+            '    newRow.Cell(3).Value = previousLapTime.ToString("hh\:mm\:ss\.fff")
+            '    newRow.Cell(4).Value = currentLapTime.ToString("hh\:mm\:ss\.fff")
+            '    newRow.Cell(5).Value = DateTime.Now.ToString("HH:mm:ss.fff")
 
-                ' Do NOT call Save() here to avoid blocking — workbook is saved on Stop
-            Catch ex As Exception
-                MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+            '    ' Do NOT call Save() here to avoid blocking — workbook is saved on Stop
+            'Catch ex As Exception
+            '    MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            'End Try
 
             ' Format the lap time string
             Dim lapText As String = $"Lap {lapCounter}: {lapInterval.ToString("hh\:mm\:ss\.fff")}"
