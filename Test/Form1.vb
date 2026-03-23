@@ -14,7 +14,7 @@ Public Class Form1
 
     ' --- Excel Logging for Stopwatch/Laps --- 
     Private lapCounter As Integer = 0
-    Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "template.xlsx")
+    Private excelTemplatePath As String = Path.Combine(Application.StartupPath, "lap_template.xlsx")
     Private excelFilePath As String = ""
     Private openWorkbook As XLWorkbook = Nothing
 
@@ -335,7 +335,7 @@ Public Class Form1
             lapCounter = 0
             previousLapTime = TimeSpan.Zero
 
-            Dim fileName = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
+            Dim fileName = "lap_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
             Dim logFolder = Path.Combine(Application.StartupPath, "Log_Files")
             If Not Directory.Exists(logFolder) Then Directory.CreateDirectory(logFolder)
             excelFilePath = Path.Combine(logFolder, fileName)
