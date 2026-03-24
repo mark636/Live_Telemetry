@@ -286,7 +286,6 @@ Public Class Form1
 
             ' Do NOT call Save() here to avoid blocking — workbook is saved on Stop
         Catch ex As Exception
-            MessageBox.Show("Failed to write lap to Excel: " & ex.Message, "Excel Write Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
