@@ -16,7 +16,6 @@ Public Class Form1
     Private lapCounter As Integer = 0
     Private excelTemplatePath_data As String = Path.Combine(Application.StartupPath, "data_template.xlsx")
     Private excelTemplatePath_lap As String = Path.Combine(Application.StartupPath, "lap_template.xlsx")
-
     Private excelFilePath_lap As String = ""
     Private excelFilePath_data As String = ""
     Private openWorkbook_data As XLWorkbook = Nothing
@@ -42,6 +41,7 @@ Public Class Form1
     Dim ph As Decimal
     Dim yw As Decimal
 
+    Dim expectedGearRatios As New Dictionary(Of Decimal, Decimal) From {{1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D}, {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}}
     ' --- Initialization ---
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         SerialPort1.Close()
@@ -147,10 +147,7 @@ Public Class Form1
         UpdateCharts(Total_Speed, POWER)
 
         ' --- Gear Check ---
-        Dim expectedGearRatios As New Dictionary(Of Decimal, Decimal) From {
-        {1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D},
-        {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}
-        }
+
 
         Dim gearKey As Decimal
         Dim toleranceG = 0.3D
@@ -327,19 +324,19 @@ Public Class Form1
                           If s.Points.Count > Limit Then s.Points.RemoveAt(0)
                       End Sub)
     End Sub
-    'To calculate the gear ratio its just chainring gear/ Rear gear 
+    'To calculate the gear ratio its just chainring gear/ Rear gear {1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D}, {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}
     Private Sub comparsion(actualratio As Decimal)
-        If actualratio <= 2.81 Then
+        If actualratio <= expectedGearRatios(1) Then
             actualgear = 1
-        ElseIf actualratio >= 2.81 And actualratio <= 3.21 Then
+        ElseIf actualratio >= expectedGearRatios(1) And actualratio <= expectedGearRatios(2) Then
             actualgear = 2
-        ElseIf actualratio >= 3.21 And actualratio <= 3.6 Then
+        ElseIf actualratio >= expectedGearRatios(2) And actualratio <= expectedGearRatios(3) Then
             actualgear = 3
-        ElseIf actualratio >= 3.6 And actualratio <= 4.09 Then
+        ElseIf actualratio >= expectedGearRatios(3) And actualratio <= expectedGearRatios(4) Then
             actualgear = 4
-        ElseIf actualratio >= 4.09 And actualratio <= 4.5 Then
+        ElseIf actualratio >= expectedGearRatios(4) And actualratio <= expectedGearRatios(5) Then
             actualgear = 5
-        ElseIf actualratio >= 4.5 And actualratio <= 5.29 Then
+        ElseIf actualratio >= expectedGearRatios(5) And actualratio <= expectedGearRatios(6) Then
             actualgear = 6
         Else
             actualgear = 0
