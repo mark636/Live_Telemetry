@@ -587,7 +587,7 @@ Public Class Form1
 
     ' Add this event to handle Enter key press
     Private Sub Form1_KeyDown(sender As Object, e As KeyEventArgs) Handles Me.KeyDown
-        If e.KeyCode = Keys.Enter Then
+        If e.KeyCode = Keys.Space Then
             e.SuppressKeyPress = True ' Prevent beep sound
             btnLapReset_Click(sender, e)
         End If
