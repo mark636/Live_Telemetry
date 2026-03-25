@@ -5,6 +5,7 @@ Imports System.Collections.Concurrent
 Imports System.Diagnostics
 Imports System.IO
 Imports ClosedXML.Excel
+Imports Irony.Parsing
 Public Class Form1
     ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
@@ -41,6 +42,7 @@ Public Class Form1
     Dim ph As Decimal
     Dim yw As Decimal
 
+    Dim originalGearRatios As New Dictionary(Of Decimal, Decimal) From {{1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D}, {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}}
     Dim expectedGearRatios As New Dictionary(Of Decimal, Decimal) From {{1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D}, {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}}
     ' --- Initialization ---
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -66,6 +68,12 @@ Public Class Form1
         ' Enable KeyPreview so the form receives key events before controls
         Me.KeyPreview = True
 
+        TextBox_Gear1_Display.Text = expectedGearRatios(1).ToString()
+        TextBox_Gear2_Display.Text = expectedGearRatios(2).ToString()
+        TextBox_Gear3_Display.Text = expectedGearRatios(3).ToString()
+        TextBox_Gear4_Display.Text = expectedGearRatios(4).ToString()
+        TextBox_Gear5_Display.Text = expectedGearRatios(5).ToString()
+        TextBox_Gear6_Display.Text = expectedGearRatios(6).ToString()
 
     End Sub
 
@@ -107,6 +115,43 @@ Public Class Form1
             End If
         Next
     End Sub
+
+    Private Sub Button_GearSubmit_Click(sender As Object, e As EventArgs) Handles Button_GearSubmit.Click
+        For i As Integer = 1 To expectedGearRatios.Count
+            Dim TextBoxName = $"TextBox_Gear{i}"
+            Dim TextBoxDisplayName = $"TextBox_Gear{i}_Display"
+            Dim ctrls = Me.Controls.Find(TextBoxName, True)
+            Dim display = Me.Controls.Find(TextBoxDisplayName, True)
+            If ctrls.Length = 0 OrElse Not TypeOf ctrls(0) Is TextBox Then
+                Continue For
+            End If
+            Dim tbd = CType(display(0), TextBox)
+            Dim tb = CType(ctrls(0), TextBox)
+            Dim txt = tb.Text.Trim()
+            Dim gear As Decimal
+            If Decimal.TryParse(txt, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, gear) Then
+                expectedGearRatios(i) = gear
+                tbd.Text = txt
+                tb.Text = Nothing
+            ElseIf String.IsNullOrEmpty(txt) Then
+                Continue For
+            Else
+                MessageBox.Show($"Invalid input for Gear {i}. Please enter a valid decimal number.", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                tb.Text = Nothing
+            End If
+        Next
+    End Sub
+
+    Private Sub Button_GearReset_Click(sender As Object, e As EventArgs) Handles Button_GearReset.Click
+        For i As Integer = 1 To expectedGearRatios.Count
+            Dim TextBoxDisplayName = $"TextBox_Gear{i}_Display"
+            Dim display = Me.Controls.Find(TextBoxDisplayName, True)
+            Dim tbd = CType(display(0), TextBox)
+            expectedGearRatios(i) = originalGearRatios(i)
+            tbd.Text = expectedGearRatios(i).ToString()
+        Next
+    End Sub
+
     Private Sub Timer2_Tick(sender As Object, e As EventArgs) Handles Timer2.Tick
         ' Update the main display label with the formatted time
         lblTime.Text = sw.Elapsed.ToString("mm\:ss\.fff")
