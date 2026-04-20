@@ -2,10 +2,8 @@
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Text
 Imports System.Collections.Concurrent
-Imports System.Diagnostics
 Imports System.IO
 Imports ClosedXML.Excel
-Imports Irony.Parsing
 Public Class Form1
     ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
@@ -15,12 +13,14 @@ Public Class Form1
 
     ' --- Excel Logging for Stopwatch/Laps --- 
     Private lapCounter As Integer = 0
-    Private excelTemplatePath_data As String = Path.Combine(Application.StartupPath, "data_template_4.xlsx")
-    Private excelTemplatePath_lap As String = Path.Combine(Application.StartupPath, "lap_template.xlsx")
+    Dim pathToTop = "..\..\..\"
+    Private excelTemplatePath_lap As String = Path.Combine(Path.Combine(Application.StartupPath, pathToTop), "lap_template.xlsx")
+    Private excelTemplatePath_data As String = Path.Combine(Application.StartupPath, "data_template.xlsx")
+    Private excelFolderPath As String = ""
     Private excelFilePath_lap As String = ""
     Private excelFilePath_data As String = ""
-    Private openWorkbook_data As XLWorkbook = Nothing
     Private openWorkbook_lap As XLWorkbook = Nothing
+    Private openWorkbook_data As XLWorkbook = Nothing
     Private lapTitles As String() = {
         "Lap Number",
         "Lap Time Total",
@@ -57,8 +57,7 @@ Public Class Form1
         "Cadence"
     }
 
-
-
+    Dim chartTickCounter As Integer = 0
 
     '-----StopWatch--------------'
     Private sw As New Stopwatch()
@@ -114,6 +113,8 @@ Public Class Form1
         TextBox_Gear5_Display.Text = expectedGearRatios(5).ToString()
         TextBox_Gear6_Display.Text = expectedGearRatios(6).ToString()
 
+        'MessageBox.Show(Application.StartupPath)
+
     End Sub
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
@@ -121,11 +122,10 @@ Public Class Form1
         Timer2.Stop()
         If SerialPort1.IsOpen Then SerialPort1.Close()
         Try
-            SaveAndDisposeWorkbook(openWorkbook_data)
             SaveAndDisposeWorkbook(openWorkbook_lap)
+            SaveAndDisposeWorkbook(openWorkbook_data)
         Catch ex As Exception
         End Try
-
     End Sub
 
     Private Sub InitializeChart(chart As Chart, title As String, seriesNames() As String)
@@ -190,28 +190,6 @@ Public Class Form1
         Return tbl
     End Function
 
-    Private Sub AppendData()
-        Try
-            If Data Is Nothing OrElse Data.Count = 0 Then Return
-            OpenWorkbookIfNeeded(openWorkbook_data, excelFilePath_data)
-            If openWorkbook_data Is Nothing Then Return
-
-            Dim ws = openWorkbook_data.Worksheet(1)
-            Dim tbl = EnsureTable(ws, dataTitles, "DataLog")
-            tbl.InsertRowsBelow(1)
-            Dim lastRangeRow = tbl.DataRange.LastRow()
-            Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
-            Dim newRow As IXLRow = ws.Row(rowNumber)
-            newRow.Cell(1).Value = DateTime.Now.ToString("HH:mm:ss.fff")
-            For index = 0 To Math.Min(Data.Count - 1, dataTitles.Length - 1) ' Ensure we don't exceed column count
-                newRow.Cell(index + 2).Value = Data(index)
-            Next
-
-        Catch ex As Exception
-            Debug.Write("AppendData error: " & ex.Message)
-        End Try
-    End Sub
-
     Private Sub AppendLap(lapNumber As Integer, lapInterval As TimeSpan, startTime As TimeSpan, endTime As TimeSpan)
         Try
             OpenWorkbookIfNeeded(openWorkbook_lap, excelFilePath_lap)
@@ -234,16 +212,25 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub SaveCloseData()
-        If openWorkbook_data IsNot Nothing Then
-            Try
-                openWorkbook_data.Save()
-            Catch ex As Exception
-            Finally
-                openWorkbook_data.Dispose()
-                openWorkbook_data = Nothing
-            End Try
-        End If
+    Private Sub AppendData()
+        Try
+            If Data Is Nothing OrElse Data.Count = 0 Then Return
+            OpenWorkbookIfNeeded(openWorkbook_data, excelFilePath_data)
+            If openWorkbook_data Is Nothing Then Return
+
+            Dim ws = openWorkbook_data.Worksheet(1)
+            Dim tbl = EnsureTable(ws, dataTitles, "DataLog")
+            tbl.InsertRowsBelow(1)
+            Dim lastRangeRow = tbl.DataRange.LastRow()
+            Dim rowNumber = lastRangeRow.RangeAddress.FirstAddress.RowNumber
+            Dim newRow As IXLRow = ws.Row(rowNumber)
+            newRow.Cell(1).Value = DateTime.Now.ToString("HH:mm:ss.fff")
+            For index = 0 To Math.Min(Data.Count - 1, dataTitles.Length - 1) ' Ensure we don't exceed column count
+                newRow.Cell(index + 2).Value = Data(index)
+            Next
+        Catch ex As Exception
+            Debug.Write("AppendData error: " & ex.Message)
+        End Try
     End Sub
 
     Private Sub SaveCloseLap()
@@ -258,6 +245,17 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub SaveCloseData()
+        If openWorkbook_data IsNot Nothing Then
+            Try
+                openWorkbook_data.Save()
+            Catch ex As Exception
+            Finally
+                openWorkbook_data.Dispose()
+                openWorkbook_data = Nothing
+            End Try
+        End If
+    End Sub
 
     ' --- Serial Handling ---
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
@@ -276,7 +274,6 @@ Public Class Form1
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         Dim linesToProcess As Integer = 5 ' Tune this if needed
         Dim line As String = Nothing
-
         For i As Integer = 1 To linesToProcess
             If dataQueue.TryDequeue(line) Then
                 ProcessLine(line)
@@ -292,7 +289,7 @@ Public Class Form1
             Dim TextBoxDisplayName = $"TextBox_Gear{i}_Display"
             Dim ctrls = Me.Controls.Find(TextBoxName, True)
             Dim display = Me.Controls.Find(TextBoxDisplayName, True)
-            If ctrls.Length = 0 OrElse Not TypeOf ctrls(0) Is TextBox Then
+            If ctrls.Length = 0 OrElse TypeOf ctrls(0) IsNot TextBox Then
                 Continue For
             End If
             Dim tbd = CType(display(0), TextBox)
@@ -332,12 +329,9 @@ Public Class Form1
         If String.IsNullOrEmpty(line) OrElse Not line.Contains(",") Then Return
         Dim s() As String = line.Split(",")
         If s.Length < dataTitles.Length Then Return
-
         If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
-
         Dim vals As New List(Of Decimal)
         Dim parsedValue As Decimal
-
         For Each str As String In s
             If Decimal.TryParse(str, parsedValue) Then
                 vals.Add(parsedValue)
@@ -345,9 +339,7 @@ Public Class Form1
                 Debug.WriteLine($"Could Not Parse: '{str}'")
             End If
         Next
-
         Data = vals
-
         RPM_CR = vals(3)
         RPM_C = vals(0)
         RPM_S = vals(4)
@@ -361,7 +353,6 @@ Public Class Form1
         rl = vals(9)
         ph = vals(10)
         yw = vals(11)
-
 
         LbPower.Invoke(Sub() LbPower.Text = POWER.ToString())
         LbGear2.Invoke(Sub() LbGear2.Text = Gear.ToString())
@@ -377,15 +368,13 @@ Public Class Form1
         UpdateCharts(Total_Speed, POWER)
 
         ' --- Gear Check ---
-
-
         Dim gearKey As Decimal
         Dim toleranceG = 0.3D
         If Decimal.TryParse(s(7).Trim(), gearKey) Then
             If expectedGearRatios.ContainsKey(gearKey) Then
                 Dim expected = expectedGearRatios(gearKey)
                 If actualGearRatio < (expected - toleranceG) Or actualGearRatio > (expected + toleranceG) Then
-                    comparsion(actualGearRatio)
+                    Comparsion(actualGearRatio)
                     Label8.Invoke(Sub()
                                       Label8.Text = $"GEAR RATIO: {actualGearRatio:F2} Gear: {actualgear}"
                                       GroupBox4.BackColor = Color.Red
@@ -461,8 +450,6 @@ Public Class Form1
         AppendData()
     End Sub
 
-
-
     Private Sub UpdateGearChainRatio(RPM_CR As Decimal, RPM_S As Decimal, RPM_C As Decimal)
         ' Calculate gear ratio (Chainring RPM / Sprocket RPM)
         If RPM_CR > 0 Then
@@ -479,7 +466,6 @@ Public Class Form1
         End If
     End Sub
 
-    Dim chartTickCounter As Integer = 0
     Private Sub UpdateCharts(speed As Decimal, power As Decimal)
         chartTickCounter += 1
         If chartTickCounter Mod 10 <> 0 Then Return ' Update charts less frequently
@@ -496,7 +482,7 @@ Public Class Form1
                       End Sub)
     End Sub
     'To calculate the gear ratio its just chainring gear/ Rear gear {1D, 2.81D}, {2D, 3.21D}, {3D, 3.6D}, {4D, 4.09D}, {5D, 4.5D}, {6D, 5.29D}
-    Private Sub comparsion(actualratio As Decimal)
+    Private Sub Comparsion(actualratio As Decimal)
         If actualratio <= expectedGearRatios(1) Then
             actualgear = 1
         ElseIf actualratio >= expectedGearRatios(1) And actualratio <= expectedGearRatios(2) Then
@@ -546,18 +532,17 @@ Public Class Form1
             MsgBox("Connection error: " & ex.Message)
         End Try
     End Sub
+
     Private Sub btnDisconnect_Click(sender As Object, e As EventArgs) Handles btnDisconnect.Click
         SerialPort1.Close()
         Timer1.Stop()
+        MsgBox("Disconnected successfully!")
     End Sub
 
     Private Sub btnStartStop_click(sender As Object, e As EventArgs) Handles btnStartStop.Click
         If sw.IsRunning Then
-
-            SaveAndDisposeWorkbook(openWorkbook_data)
             SaveAndDisposeWorkbook(openWorkbook_lap)
-
-
+            SaveAndDisposeWorkbook(openWorkbook_data)
             sw.Stop()
             Timer2.Enabled = False
             btnStartStop.Text = "Start"
@@ -566,18 +551,22 @@ Public Class Form1
             lapCounter = 0
             previousLapTime = TimeSpan.Zero
 
-            Dim fileName_lap = "lap_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
-            Dim fileName_data = "data_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") & ".xlsx"
-            Dim logFolder = Path.Combine(Application.StartupPath, "Log_Files")
+            Dim time = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")
+            Dim fileName_lap = "lap_" + time & ".xlsx"
+            Dim fileName_data = "data_" + time & ".xlsx"
+            Dim path_from_debug = pathToTop + "Log_Files\" + time
+            Dim logFolder = Path.Combine(Application.StartupPath, path_from_debug)
+
             If Not Directory.Exists(logFolder) Then Directory.CreateDirectory(logFolder)
             excelFilePath_lap = Path.Combine(logFolder, fileName_lap)
             excelFilePath_data = Path.Combine(logFolder, fileName_data)
 
-            CreateWorkbookFromTemplateOrDefault(excelFilePath_data, excelTemplatePath_data, dataTitles, "DataLog")
-            CreateWorkbookFromTemplateOrDefault(excelFilePath_lap, excelTemplatePath_lap, lapTitles, "LapTimes")
+            MessageBox.Show(excelFilePath_lap)
 
-            openWorkbook_data = New XLWorkbook(excelFilePath_data)
+            CreateWorkbookFromTemplateOrDefault(excelFilePath_lap, excelTemplatePath_lap, lapTitles, "LapTimes")
+            CreateWorkbookFromTemplateOrDefault(excelFilePath_data, excelTemplatePath_data, dataTitles, "DataLog")
             openWorkbook_lap = New XLWorkbook(excelFilePath_lap)
+            openWorkbook_data = New XLWorkbook(excelFilePath_data)
 
             sw.Start()
             Timer2.Enabled = True
@@ -585,16 +574,14 @@ Public Class Form1
             btnReset.Text = "Lap"
         End If
     End Sub
+
     Private Sub btnLapReset_Click(sender As Object, e As EventArgs) Handles btnReset.Click
         If sw.IsRunning Then
             ' Lap functionality
             Dim currentLapTime As TimeSpan = sw.Elapsed
             Dim lapInterval As TimeSpan = currentLapTime.Subtract(previousLapTime)
-
             lapCounter += 1
-
             AppendLap(lapCounter, lapInterval, previousLapTime, currentLapTime)
-
 
             ' Format the lap time string
             Dim lapText As String = $"Lap {lapCounter}: {lapInterval.ToString("hh\:mm\:ss\.fff")}"
@@ -611,18 +598,13 @@ Public Class Form1
             lbLaps.Items.Clear()
             lblTime.Text = "00:00.000"
             btnReset.Text = "Lap"
-
-
         End If
     End Sub
-
 
     ' Add this to enable custom drawing for the ListBox
     Private Sub lbLaps_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lbLaps.DrawItem
         If e.Index < 0 Then Return
-
         e.DrawBackground()
-
         Dim itemText As String = lbLaps.Items(e.Index).ToString()
         Dim brush As Brush = Brushes.Black
 
@@ -631,11 +613,9 @@ Public Class Form1
         If e.Index < lbLaps.Items.Count - 1 Then ' Not the first lap
             Dim currentLapNum As Integer = lapTimes.Count - e.Index
             Dim previousLapNum As Integer = currentLapNum - 1
-
             If previousLapNum > 0 Then
                 Dim currentInterval As TimeSpan = lapTimes(currentLapNum - 1).Subtract(If(currentLapNum > 1, lapTimes(currentLapNum - 2), TimeSpan.Zero))
                 Dim previousInterval As TimeSpan = lapTimes(previousLapNum - 1).Subtract(If(previousLapNum > 1, lapTimes(previousLapNum - 2), TimeSpan.Zero))
-
                 If currentInterval < previousInterval Then
                     brush = Brushes.Green ' Faster lap
                 ElseIf currentInterval > previousInterval Then
@@ -655,9 +635,5 @@ Public Class Form1
             btnLapReset_Click(sender, e)
         End If
     End Sub
-
-
-
-
 
 End Class
