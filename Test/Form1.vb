@@ -4,12 +4,20 @@ Imports System.Text
 Imports System.Collections.Concurrent
 Imports System.IO
 Imports ClosedXML.Excel
+Imports System.Security.Cryptography
 Public Class Form1
     ' --- Data and Communication ---
     Dim WithEvents SerialPort1 As New SerialPort
     Dim WithEvents Timer1 As New Timer
     Dim dataQueue As New ConcurrentQueue(Of String)
     Dim partialLine As String = ""
+
+    Private Const DEBUG_PRINT_PROCESSED_LINE As Boolean = True
+
+    'Constants and Byte Buffer for packet framing
+    Private Const Byte_Start As Byte = &H2
+    Private Const Byte_End As Byte = &H3
+    Private recievedBuffer As New List(Of Byte)
 
     ' --- Excel Logging for Stopwatch/Laps --- 
     Private lapCounter As Integer = 0
@@ -260,12 +268,48 @@ Public Class Form1
     ' --- Serial Handling ---
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         Try
-            Dim data As String = SerialPort1.ReadExisting()
-            Dim lines = (partialLine & data).Split(ControlChars.Lf)
-            For i = 0 To lines.Length - 2
-                dataQueue.Enqueue(lines(i).Trim())
-            Next
-            partialLine = lines.Last()
+            Dim bytes_to_read As Integer = SerialPort1.BytesToRead
+            If bytes_to_read <= 0 Then Return
+
+            Dim buffer(bytes_to_read - 1) As Byte
+            SerialPort1.Read(buffer, 0, bytes_to_read)
+
+            SyncLock recievedBuffer
+                recievedBuffer.AddRange(buffer)
+
+                While True
+                    Dim startIndex As Integer = recievedBuffer.IndexOf(Byte_Start)
+                    If startIndex = -1 Then
+                        Const MaxBufferSize As Integer = 8192
+                        If recievedBuffer.Count > MaxBufferSize Then
+                            recievedBuffer.RemoveRange(0, recievedBuffer.Count - MaxBufferSize)
+                            Console.WriteLine("Warning: recievedBuffer trimmed to avoid growth.")
+                        End If
+                        Exit While
+                    End If
+
+                    Dim endIndex As Integer = recievedBuffer.IndexOf(Byte_End, startIndex + 1)
+                    If endIndex = -1 Then
+                        If startIndex > 0 Then
+                            recievedBuffer.RemoveRange(0, startIndex)
+                        End If
+                        Exit While
+                    End If
+
+                    Dim payloadLength As Integer = endIndex - (startIndex + 1)
+                    If payloadLength > 0 Then
+                        Dim payload(payloadLength - 1) As Byte
+                        recievedBuffer.CopyTo(startIndex + 1, payload, 0, payloadLength)
+                        Dim line As String = Encoding.UTF8.GetString(payload).Trim(ControlChars.Cr, ControlChars.Lf, " "c, vbTab)
+                        If Not String.IsNullOrEmpty(line) Then
+                            dataQueue.Enqueue(line)
+                        End If
+                    Else
+                    End If
+
+                    recievedBuffer.RemoveRange(0, endIndex + 1)
+                End While
+            End SyncLock
         Catch ex As Exception
             Console.WriteLine("Serial error: " & ex.Message)
         End Try
