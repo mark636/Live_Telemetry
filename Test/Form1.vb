@@ -11,6 +11,13 @@ Public Class Form1
     Dim dataQueue As New ConcurrentQueue(Of String)
     Dim partialLine As String = ""
 
+    Private Const DEBUG_PRINT_PROCESSED_LINE As Boolean = True
+
+    ' Framing constants and byte buffer for STX/ETX framed packets
+    Private Const Byte_Start As Byte = &H2
+    Private Const Byte_End As Byte = &H3
+    Private receiveBuffer As New List(Of Byte)()
+
     '-----StopWatch--------------'
     Private sw As New Stopwatch()
     Private lapTimes As New List(Of TimeSpan)()
@@ -68,15 +75,61 @@ Public Class Form1
         Next
     End Sub
 
-    ' --- Serial Handling ---
+    ' --- Serial Handling (STX/ETX framed packets) ---
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         Try
-            Dim data As String = SerialPort1.ReadExisting()
-            Dim lines = (partialLine & data).Split(ControlChars.Lf)
-            For i = 0 To lines.Length - 2
-                dataQueue.Enqueue(lines(i).Trim())
-            Next
-            partialLine = lines.Last()
+            Dim bytesToRead As Integer = SerialPort1.BytesToRead
+            If bytesToRead <= 0 Then Return
+
+            Dim buffer(bytesToRead - 1) As Byte
+            SerialPort1.Read(buffer, 0, bytesToRead)
+
+            SyncLock receiveBuffer
+                receiveBuffer.AddRange(buffer)
+
+                ' Process all complete frames delimited by STX / ETX
+                While True
+                    Dim startIndex As Integer = receiveBuffer.IndexOf(Byte_Start)
+                    If startIndex = -1 Then
+                        ' No start marker yet — trim if buffer grows too large and keep waiting
+                        Const MaxBufferSize As Integer = 8192
+                        If receiveBuffer.Count > MaxBufferSize Then
+                            receiveBuffer.RemoveRange(0, receiveBuffer.Count - MaxBufferSize)
+                            Console.WriteLine("Warning: receiveBuffer trimmed to avoid growth.")
+                        End If
+                        Exit While
+                    End If
+
+                    ' Find ETX after STX
+                    Dim endIndex As Integer = receiveBuffer.IndexOf(Byte_End, startIndex + 1)
+                    If endIndex = -1 Then
+                        ' Incomplete frame — drop garbage bytes before STX and wait for more data
+                        If startIndex > 0 Then
+                            receiveBuffer.RemoveRange(0, startIndex)
+                        End If
+                        Exit While
+                    End If
+
+                    ' Extract payload between STX and ETX
+                    Dim payloadLength As Integer = endIndex - (startIndex + 1)
+                    If payloadLength > 0 Then
+                        Dim payload(payloadLength - 1) As Byte
+                        receiveBuffer.CopyTo(startIndex + 1, payload, 0, payloadLength)
+
+                        ' Decode payload as UTF8 and enqueue trimmed text
+                        Dim line As String = Encoding.UTF8.GetString(payload).Trim(ControlChars.Cr, ControlChars.Lf, " "c, vbTab)
+                        If Not String.IsNullOrEmpty(line) Then
+                            dataQueue.Enqueue(line)
+                        End If
+                    Else
+                        ' Empty payload (STX immediately followed by ETX) — ignore or enqueue empty line if desired
+                    End If
+
+                    ' Remove processed bytes up through ETX
+                    receiveBuffer.RemoveRange(0, endIndex + 1)
+                    ' Continue loop to find additional frames
+                End While
+            End SyncLock
         Catch ex As Exception
             Console.WriteLine("Serial error: " & ex.Message)
         End Try
@@ -104,6 +157,10 @@ Public Class Form1
         If String.IsNullOrEmpty(line) OrElse Not line.Contains(",") Then Return
         Dim s() As String = line.Split(",")
         If s.Length < 25 Then Return
+
+        If DEBUG_PRINT_PROCESSED_LINE Then
+            Console.WriteLine("Processed line: " & line)
+        End If
 
         If Not Decimal.TryParse(s(0), RPM_C) OrElse Not Decimal.TryParse(s(1), RPM_L) OrElse Not Decimal.TryParse(s(2), RPM_R) Then Return
         Decimal.TryParse(s(3), RPM_CR)
